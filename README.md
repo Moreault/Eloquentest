@@ -34,3 +34,70 @@ Here is the dumbest unit test for the dumbest service you can imagine.
         }
     }
 ```
+
+That's all well and good but what if your dumb service had dependencies to other services though?
+
+```c#
+public interface ISomeOtherService
+{
+    public string UserId { get; }
+    public IReadOnlyList<int> Roles { get; }
+}
+```
+
+```c#
+public class DumbestServiceYouCanImagine
+{
+    private readonly ISomeOtherService _someOtherService;
+
+    public DumbestServiceYouCanImagine(ISomeOtherService someOtherService)
+    {
+        _someOtherService = someOtherService;
+    }
+
+    public string DoSomeOtherStuff()
+    {
+        return _someOtherService.Roles.Contains(8) ? 
+            $"User {_someOtherService.UserId} is authorized to do dumb stuff." : 
+            $"User {_someOtherService.UserId} is strictly forbidden from doing dumb stuff!";
+    }
+}
+```
+
+```c#
+[TestClass]
+public class DumbestServiceYouCanImagineTester : Tester<DumbestServiceYouCanImagine>
+{
+    [TestMethod]
+    public void WhenContainsRoleNumberEight_SayThatUserIsAuthorized()
+    {
+        //Arrange
+        var userId = Fixture.Create<string>();
+        GetMock<ISomeOtherService>().Setup(x => x.UserId).Returns(userId);
+        
+        GetMock<ISomeOtherService>().Setup(x => x.Roles).Returns(new List<int> { 8 });
+
+        //Act
+        var result = Instance.DoSomeOtherStuff();
+
+        //Assert
+        Assert.AreEqual($"User {userId} is authorized to do dumb stuff.", result);
+    }
+
+    [TestMethod]
+    public void WhenDoesNotContainRoleNumberEight_SayThatUserIsUnauthorized()
+    {
+        //Arrange
+        var userId = Fixture.Create<string>();
+        GetMock<ISomeOtherService>().Setup(x => x.UserId).Returns(userId);
+
+        GetMock<ISomeOtherService>().Setup(x => x.Roles).Returns(new List<int>());
+
+        //Act
+        var result = Instance.DoSomeOtherStuff();
+
+        //Assert
+        Assert.AreEqual($"User {userId} is strictly forbidden from doing dumb stuff!", result);
+    }
+}
+```
