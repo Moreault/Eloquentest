@@ -234,9 +234,6 @@ public class Tester
 
 public abstract class Tester<T> : Tester where T : class
 {
-    private IReadOnlyList<object> _constructorParameters;
-
-    private readonly IList<object> _overridenConstructorParameters = new List<object>();
     private IList<Type> _autoInjects;
 
     private readonly IDictionary<Type, Mock> _mocks = new Dictionary<Type, Mock>();
@@ -244,116 +241,98 @@ public abstract class Tester<T> : Tester where T : class
     /// <summary>
     /// Instance of the class that is being tested.
     /// </summary>
-    protected T Instance
+    protected T Instance { get; private set; }
+
+    protected override void InitializeTest()
     {
-        get
+        base.InitializeTest();
+
+        var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderBy(x => x.GetParameters().Length).FirstOrDefault()?.GetParameters() ?? new ParameterInfo[0];
+
+        _mocks.Clear();
+
+        var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
+
+        foreach (var i in interfaces)
         {
-            if (_instance != null)
-                return _instance;
-
-            var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderBy(x => x.GetParameters().Length).FirstOrDefault()?.GetParameters() ?? new ParameterInfo[0];
-
-            _mocks.Clear();
-
-            var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
-
-            foreach (var i in interfaces)
-            {
-                var typeArgs = new[] { i };
-                var mockType = typeof(Mock<>);
-                var constructed = mockType.MakeGenericType(typeArgs);
-                _mocks[i] = Activator.CreateInstance(constructed) as Mock;
-            }
-
-            var instancedParameters = new List<object>();
-            foreach (var p in parameters)
-            {
-                if (_overridenConstructorParameters.Any(x => x.GetType() == p.ParameterType))
-                {
-                    instancedParameters.Add(_overridenConstructorParameters.Single(x => x.GetType() == p.ParameterType));
-                }
-                else if (p.ParameterType.IsAbstract)
-                {
-                    instancedParameters.Add(_mocks[p.ParameterType].Object);
-                }
-                else
-                {
-                    instancedParameters.Add(new SpecimenContext(Fixture).Resolve(p.ParameterType));
-                }
-            }
-
-            if (instancedParameters.OfType<IServiceProvider>().Any())
-            {
-                if (_autoInjects.IsNullOrEmpty())
-                {
-                    //TODO Uncomment if some services appear to not be loaded
-                    //LoadAllAssemblies();
-
-                    var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
-                        .Where(x => x.IsClass && !x.IsAbstract && x.GetCustomAttribute<AutoInjectAttribute>() != null)
-                        .Select(x =>
-                        {
-                            var attribute = x.GetCustomAttribute<AutoInjectAttribute>();
-                            if (attribute!.Interface != null)
-                                return attribute.Interface;
-
-                            var interfaces = x.GetInterfaces();
-                            if (interfaces.Length == 1) return interfaces.Single();
-                            var withSameName = interfaces.SingleOrDefault(y => y.Name == $"I{x.Name}");
-                            if (withSameName != null) return withSameName;
-
-                            var regex = new Regex(@"(?<=[A-Z])(?=[A-Z][a-z]) | (?<=[^A-Z])(?=[A-Z]) | (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
-
-                            var splittedTypeName = regex.Replace(x.Name, " ").Split(' ');
-                            var searchResult = new List<InterfaceSearchResult>();
-
-                            var directInterfaces = x.GetDirectInterfaces();
-
-                            foreach (var i in interfaces)
-                            {
-                                var splittedInterfaceName = regex.Replace(i.Name, " ").Split(' ');
-                                var similarities = splittedInterfaceName.Sum(x => splittedTypeName.Count(y => x.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
-
-                                if (similarities > 0)
-                                    searchResult.Add(new InterfaceSearchResult
-                                    {
-                                        Interface = i,
-                                        Similarities = similarities,
-                                        IsInherited = !directInterfaces.Contains(i)
-                                    });
-                            }
-
-                            if (!searchResult.Any()) throw new Exception($"Can't inject service automatically : {x.Name} implements {interfaces.Length} interfaces but none of them are close to similar in name.");
-                            searchResult = searchResult.OrderBy(y => y.IsInherited).ThenByDescending(y => y.Similarities).ToList();
-                            if (searchResult.Count > 1 && searchResult[0].Similarities == searchResult[1].Similarities && searchResult[0].IsInherited == searchResult[1].IsInherited)
-                                throw new Exception($"Can't inject service automatically : {x.Name} there is ambiguity between {searchResult[0].Interface.Name} and {searchResult[1].Interface.Name}. Either change interface names or specify the interface to use.");
-
-                            return searchResult.First().Interface;
-                        });
-
-                    _autoInjects = types.ToList();
-                }
-
-                foreach (var type in _autoInjects)
-                {
-                    AddToServiceProvider(type);
-                }
-            }
-
-            _constructorParameters = instancedParameters.ToArray();
-            _instance = Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T;
-
-            return _instance;
+            var typeArgs = new[] { i };
+            var mockType = typeof(Mock<>);
+            var constructed = mockType.MakeGenericType(typeArgs);
+            _mocks[i] = Activator.CreateInstance(constructed) as Mock;
         }
-    }
-    private T _instance;
 
-    /// <summary>
-    /// Overrides an automatically-instanced constructor parameter with your own implementation.
-    /// </summary>
-    protected void OverrideConstructorParameter<TParameter>(TParameter value)
-    {
-        _overridenConstructorParameters.Add(value);
+        var instancedParameters = new List<object>();
+        foreach (var p in parameters)
+        {
+            if (p.ParameterType.IsAbstract)
+            {
+                instancedParameters.Add(_mocks[p.ParameterType].Object);
+            }
+            else
+            {
+                instancedParameters.Add(new SpecimenContext(Fixture).Resolve(p.ParameterType));
+            }
+        }
+
+        if (instancedParameters.OfType<IServiceProvider>().Any())
+        {
+            if (_autoInjects.IsNullOrEmpty())
+            {
+                //TODO Uncomment if some services appear to not be loaded
+                //LoadAllAssemblies();
+
+                var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
+                    .Where(x => x.IsClass && !x.IsAbstract && x.GetCustomAttribute<AutoInjectAttribute>() != null)
+                    .Select(x =>
+                    {
+                        var attribute = x.GetCustomAttribute<AutoInjectAttribute>();
+                        if (attribute!.Interface != null)
+                            return attribute.Interface;
+
+                        var interfaces = x.GetInterfaces();
+                        if (interfaces.Length == 1) return interfaces.Single();
+                        var withSameName = interfaces.SingleOrDefault(y => y.Name == $"I{x.Name}");
+                        if (withSameName != null) return withSameName;
+
+                        var regex = new Regex(@"(?<=[A-Z])(?=[A-Z][a-z]) | (?<=[^A-Z])(?=[A-Z]) | (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
+
+                        var splittedTypeName = regex.Replace(x.Name, " ").Split(' ');
+                        var searchResult = new List<InterfaceSearchResult>();
+
+                        var directInterfaces = x.GetDirectInterfaces();
+
+                        foreach (var i in interfaces)
+                        {
+                            var splittedInterfaceName = regex.Replace(i.Name, " ").Split(' ');
+                            var similarities = splittedInterfaceName.Sum(x => splittedTypeName.Count(y => x.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
+
+                            if (similarities > 0)
+                                searchResult.Add(new InterfaceSearchResult
+                                {
+                                    Interface = i,
+                                    Similarities = similarities,
+                                    IsInherited = !directInterfaces.Contains(i)
+                                });
+                        }
+
+                        if (!searchResult.Any()) throw new Exception($"Can't inject service automatically : {x.Name} implements {interfaces.Length} interfaces but none of them are close to similar in name.");
+                        searchResult = searchResult.OrderBy(y => y.IsInherited).ThenByDescending(y => y.Similarities).ToList();
+                        if (searchResult.Count > 1 && searchResult[0].Similarities == searchResult[1].Similarities && searchResult[0].IsInherited == searchResult[1].IsInherited)
+                            throw new Exception($"Can't inject service automatically : {x.Name} there is ambiguity between {searchResult[0].Interface.Name} and {searchResult[1].Interface.Name}. Either change interface names or specify the interface to use.");
+
+                        return searchResult.First().Interface;
+                    });
+
+                _autoInjects = types.ToList();
+            }
+
+            foreach (var type in _autoInjects)
+            {
+                AddToServiceProvider(type);
+            }
+        }
+
+        Instance = Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T;
     }
 
     /// <summary>

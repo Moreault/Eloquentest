@@ -4,7 +4,19 @@
     <TargetFramework>net6.0</TargetFramework>
 	  <ImplicitUsings>enable</ImplicitUsings>
 	  <RootNamespace>ToolBX.Eloquentest</RootNamespace>
+	  <Authors>Mathieu Moreault</Authors>
+	  <PackageIcon>eloquentest.png</PackageIcon>
+	  <RepositoryUrl>https://github.com/Moreault/Eloquentest</RepositoryUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <Description>A simple to use .NET unit testing framework built on top of MSTest and Moq. It also includes built-in support for services that are injected using [AutoInject].</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\eloquentest.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
