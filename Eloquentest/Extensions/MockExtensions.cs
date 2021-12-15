@@ -21,12 +21,12 @@ public static class MockExtensions
 
     public static IEnumerable<IReturnsResult<TMock>> Returns<TMock, TResult>(this IEnumerable<IReturns<TMock, TResult>> r, IEnumerable<TResult> value) where TMock : class
     {
-        var rectum = r.ToList();
+        var returns = r.ToList();
         var values = value.ToList();
-        if (rectum.Count != values.Count)
-            throw new Exception("Returns and values must be equal in size.");
+        if (returns.Count != values.Count)
+            throw new Exception($"Returns and values must be equal in size but they had {returns.Count} and {values.Count} respectively.");
 
-        return rectum.Select((t, i) => t.Returns(values[i])).ToList();
+        return returns.Select((t, i) => t.Returns(values[i])).ToList();
     }
 
     public static void VerifySet<TMock>(this IEnumerable<Mock<TMock>> mocks, Action<TMock> expression) where TMock : class
