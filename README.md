@@ -101,3 +101,31 @@ public class DumbestServiceYouCanImagineTester : Tester<DumbestServiceYouCanImag
     }
 }
 ```
+
+## Testing collections
+
+Ever wanted to test **whichever** item from a collection?
+
+```c#
+[TestMethod]
+public void WhenYouWantWhichever_GetWhichever()
+{
+    //Arrange
+    var list = Fixture.CreateMany<string>().ToList();
+
+    var something = Fixture.Create<Something>();
+    GetMock<ISomeShadyService>().Setup(x => x.GetSomething(list.GetRandom())).Returns(something);
+
+    //Act
+    var result = Instance.DoSomething(list);
+
+    //Assert
+    result.Should.BeEquivalentTo(something);
+}
+```
+
+You can also do the same thing but with the index only if that's what floats your boat.
+
+```c#
+var index = list.GetRandomIndex();
+```
