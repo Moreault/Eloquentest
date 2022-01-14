@@ -152,4 +152,9 @@ public static class FixtureExtensions
             numbers.Add(fixture.CreateDivisbleBy(value));
         return numbers;
     }
+
+    /// <summary>
+    /// Returns a floating-point value between 0 and 1.
+    /// </summary>
+    public static float CreateNormalizedFloat(this IFixture fixture) => fixture.CreateBetween(0f, 100f) / 100.0f;
 }
