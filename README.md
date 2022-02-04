@@ -129,3 +129,60 @@ You can also do the same thing but with the index only if that's what floats you
 ```c#
 var index = list.GetRandomIndex();
 ```
+
+## Using the generic tester with custom constructor parameters
+
+It’s all well and good but what if you want to use the generic Tester class while providing your own parameters to the tested class’ constructor instead of the automatically generated mocks and fixtures?
+
+You can do that with the ConstructWith() method.
+
+```c#
+[AutoInject]
+public class GameObjectFactory : IGameObjectFactory
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public GameObjectFactory(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public IGameObject Create(GameObjectConfiguration configuration) => new GameObject(_serviceProvider, configuration);
+}
+
+public record GameObjectConfiguration(string Name, Vector2<float> InitialPosition, Direction InitialDirection);
+
+//The service provider is passed by the GameObjectFactory and is always the same reference
+//Configuration is unique to every instance so we need to be able to override it if we want to test that things are correctly initialized
+public GameObject(IServiceProvider serviceProvider, GameObjectConfiguration configuration)
+{
+    _game = serviceProvider.GetRequiredService<IGame>();
+    Name = configuration.Name;
+    Position = configuration.InitialPosition;
+    Direction = configuration.InitialDirection;
+}
+
+[TestClass]
+public class GameObjectTester 
+{
+    [TestClass]
+    public class Move : Tester<GameObject>
+    {
+        [TestMethod]
+        public void Always_ChangePosition()
+        {
+            //Arrange
+            var configuration = Fixture.Create<GameObjectConfiguration>();
+
+            //It is important to call ConstructWith before accessing the Instance property!
+            ConstructWith(configuration);
+
+            //Act
+            Instance.Move(new Vector2<float>(1, 0));
+
+            //Assert
+            Instance.Position.Should().Be(configuration.InitialPosition + new Vector2<float>(1, 0));
+        }
+    }
+}
+```

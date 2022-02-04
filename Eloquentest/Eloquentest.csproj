@@ -12,7 +12,7 @@
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <Description>A simple to use .NET unit testing framework built on top of MSTest and Moq. It also includes built-in support for services that are injected using [AutoInject].</Description>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <Version>1.0.2</Version>
+	  <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,8 +30,8 @@
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
-    <PackageReference Include="ToolBX.AutoInject" Version="1.0.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+    <PackageReference Include="ToolBX.AutoInject" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
