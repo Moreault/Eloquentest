@@ -267,13 +267,8 @@ public abstract class Tester<T> : Tester where T : class
 
             var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
 
-            foreach (var i in interfaces)
-            {
-                var typeArgs = new[] { i };
-                var mockType = typeof(Mock<>);
-                var constructed = mockType.MakeGenericType(typeArgs);
-                _mocks[i] = Activator.CreateInstance(constructed) as Mock;
-            }
+            foreach (var i in interfaces.Where(x => !_mocks.ContainsKey(x)))
+                AddMock(i);
 
             var instancedParameters = new List<object>();
             foreach (var parameterInfo in parameters)
@@ -363,6 +358,14 @@ public abstract class Tester<T> : Tester where T : class
         });
     }
 
+    private void AddMock(Type type)
+    {
+        var typeArgs = new[] { type };
+        var mockType = typeof(Mock<>);
+        var constructed = mockType.MakeGenericType(typeArgs);
+        _mocks[type] = Activator.CreateInstance(constructed) as Mock;
+    }
+
     protected override void CleanupTest()
     {
         base.CleanupTest();
@@ -418,6 +421,8 @@ public abstract class Tester<T> : Tester where T : class
     /// </summary>
     protected Mock<TMock> GetMock<TMock>() where TMock : class
     {
+        if (!_mocks.ContainsKey(typeof(TMock)))
+            AddMock(typeof(TMock));
         return (Mock<TMock>)_mocks[typeof(TMock)];
     }
 
