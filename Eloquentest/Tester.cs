@@ -429,16 +429,7 @@ public abstract class Tester<T> : Tester where T : class
     /// <summary>
     /// Adds service of type <see cref="TService"/> to <see cref="IServiceProvider"/>.
     /// </summary>
-    protected void AddToServiceProvider<TService>() where TService : class
-    {
-        if (_mocks.ContainsKey(typeof(IServiceProvider)))
-        {
-            var mock = new Mock<TService>();
-            if (!_mocks.ContainsKey(typeof(TService)))
-                _mocks[typeof(TService)] = mock;
-            GetMock<IServiceProvider>().Setup(x => x.GetService(typeof(TService))).Returns(mock.Object);
-        }
-    }
+    protected void AddToServiceProvider<TService>() where TService : class => AddToServiceProvider(typeof(TService));
 
     /// <summary>
     /// Adds service of specified type to <see cref="IServiceProvider"/>.
@@ -447,12 +438,11 @@ public abstract class Tester<T> : Tester where T : class
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
 
-        var mock = (Mock)Activator.CreateInstance(typeof(Mock<>).MakeGenericType(type));
-        if (_mocks.ContainsKey(typeof(IServiceProvider)))
-        {
-            if (!_mocks.ContainsKey(type))
-                _mocks[type] = mock;
-            GetMock<IServiceProvider>().Setup(x => x.GetService(type)).Returns(mock.Object);
-        }
+        if (!_mocks.ContainsKey(typeof(IServiceProvider)))
+            AddMock(typeof(IServiceProvider));
+        if (!_mocks.ContainsKey(type))
+            AddMock(type);
+        GetMock<IServiceProvider>().Setup(x => x.GetService(type)).Returns(_mocks[type].Object);
     }
+
 }
