@@ -28,11 +28,11 @@ public class Tester
     [TestInitialize]
     public void TestInitializeOnBaseClass()
     {
-        InitializeTest();
-
         Fixture = new Fixture();
         foreach (var autoCustomization in AutoCustomizations)
             Fixture.Customize(autoCustomization);
+
+        InitializeTest();
     }
 
     /// <summary>
