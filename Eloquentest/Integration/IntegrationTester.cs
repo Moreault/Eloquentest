@@ -82,7 +82,7 @@ public abstract class IntegrationTester<T> : Tester where T : class
     {
         base.InitializeTest();
 
-        if (!_bindings.Any())
+        if (_bindings == null || !_bindings.Any())
             _bindings = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
                 .Where(x => x.IsClass && !x.IsAbstract && x.GetCustomAttribute<AutoInjectAttribute>() != null)
                 .Select<Type, ClassInterfaceBinding>(x =>
