@@ -186,3 +186,11 @@ public class GameObjectTester
     }
 }
 ```
+
+## Integration tests
+The Eloquentest.Integration namespace (available on nuget.org as a separate package) provides tools to leverage MSTest to execute code without mocking all while using the Eloquentest structure and syntax you may already be familiar with.
+
+IntegrationTester and IntegreationTester<T> replace Tester and Tester<T> and there are no mocks. 
+
+### Setup
+It works right out of the box if you already use AutoInject in your regular code.
