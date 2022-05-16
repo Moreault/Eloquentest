@@ -290,7 +290,7 @@ public abstract class Tester<T> : Tester where T : class
 
             if (instancedParameters.OfType<IServiceProvider>().Any())
             {
-                if (_autoInjects.IsNullOrEmpty())
+                if (!_autoInjects.Any())
                 {
                     var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
                         .Where(x => x.IsClass && !x.IsAbstract && x.GetCustomAttribute<AutoInjectAttribute>() != null)

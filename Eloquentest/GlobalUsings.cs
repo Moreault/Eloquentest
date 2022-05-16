@@ -1,16 +1,13 @@
-﻿global using AutoFixture;
+// Global using directives
+
+global using AutoFixture;
 global using AutoFixture.Kernel;
-global using Castle.Core.Internal;
-global using Microsoft.Extensions.Options;
+global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using Moq.Language;
 global using Moq.Language.Flow;
-global using System;
 global using System.Collections.Concurrent;
-global using System.Collections.Generic;
-global using System.IO;
-global using System.Linq;
 global using System.Linq.Expressions;
 global using System.Reflection;
 global using System.Text.RegularExpressions;
