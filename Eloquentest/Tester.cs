@@ -1,4 +1,6 @@
-﻿namespace ToolBX.Eloquentest;
+﻿using Microsoft.Extensions.Options;
+
+namespace ToolBX.Eloquentest;
 
 public class Tester
 {
@@ -262,8 +264,7 @@ public abstract class Tester<T> : Tester where T : class
         _instance = new Lazy<T>(() =>
         {
             var parameters =
-                typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-                    .OrderBy(x => x.GetParameters().Length).FirstOrDefault()?.GetParameters() ?? Array.Empty<ParameterInfo>();
+                typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? Array.Empty<ParameterInfo>();
 
             var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
 
@@ -354,7 +355,7 @@ public abstract class Tester<T> : Tester where T : class
             }
 
             if (instancedParameters.Any()) _constructorParameters.AddRange(instancedParameters);
-            return Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T;
+            return (Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T)!;
         });
     }
 
@@ -363,7 +364,7 @@ public abstract class Tester<T> : Tester where T : class
         var typeArgs = new[] { type };
         var mockType = typeof(Mock<>);
         var constructed = mockType.MakeGenericType(typeArgs);
-        _mocks[type] = Activator.CreateInstance(constructed) as Mock;
+        _mocks[type] = (Activator.CreateInstance(constructed) as Mock)!;
     }
 
     protected override void CleanupTest()
@@ -424,6 +425,16 @@ public abstract class Tester<T> : Tester where T : class
         if (!_mocks.ContainsKey(typeof(TMock)))
             AddMock(typeof(TMock));
         return (Mock<TMock>)_mocks[typeof(TMock)];
+    }
+
+    /// <summary>
+    /// Sets up an options object (typically information found in an appsettings.json file.)
+    /// </summary>
+    protected TOptions SetupOptions<TOptions>(TOptions? options = null) where TOptions : class
+    {
+        options ??= Fixture.Create<TOptions>();
+        GetMock<IOptions<TOptions>>().Setup(x => x.Value).Returns(options);
+        return options;
     }
 
     /// <summary>
