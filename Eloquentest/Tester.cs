@@ -236,7 +236,7 @@ public class Tester
 
 public abstract class Tester<T> : Tester where T : class
 {
-    private IList<Type> _autoInjects;
+    private List<Type> _autoInjects = new();
 
     private readonly IDictionary<Type, Mock> _mocks = new Dictionary<Type, Mock>();
 
