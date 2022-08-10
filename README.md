@@ -194,3 +194,8 @@ IntegrationTester and IntegreationTester<T> replace Tester and Tester<T> and the
 
 ### Setup
 It works right out of the box if you already use AutoInject in your regular code.
+
+## Breaking changes
+
+1.0.X -> 1.1.X
+GetRandom and GetRandomIndex methods have been removed from Eloquentest. Please import and use ToolBX.OPEX from nuget.org instead.

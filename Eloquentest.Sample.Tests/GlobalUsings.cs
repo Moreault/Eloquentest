@@ -10,3 +10,4 @@ global using Moq;
 global using ToolBX.Eloquentest;
 global using ToolBX.Eloquentest.Extensions;
 global using ToolBX.NetAbstractions.IO;
+global using ToolBX.OPEX;
