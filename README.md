@@ -102,6 +102,24 @@ public class DumbestServiceYouCanImagineTester : Tester<DumbestServiceYouCanImag
 }
 ```
 
+### [AutoCustomization]
+
+```c#
+//This Customization will be applied project-wide so you don't have to remember to add them yourself each time in TestInitialize
+[AutoCustomization]
+public class SomeCustomization : ICustomization
+{
+    ...
+}
+
+//Also works with ISpecimenBuilder
+[AutoCustomization]
+public class SomeSpecimenBuilder : ISpecimenBuilder
+{
+    ...
+}
+```
+
 ## Testing collections
 
 Ever wanted to test **whichever** item from a collection?

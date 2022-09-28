@@ -1,3 +1,5 @@
+using AutoFixture;
+
 namespace Eloquentest.Sample.Tests;
 
 [TestClass]
@@ -52,6 +54,43 @@ public class DummyServiceTester
             //Assert
             foreach (var filename in filenames)
                 GetMock<IFile>().Verify(x => x.Delete(filename), Times.Once);
+        }
+    }
+
+    [TestClass]
+    public class GetSubIds : Tester<DummyService>
+    {
+        [TestMethod]
+        public void Always_ReturnSubs()
+        {
+            //Arrange
+            var id = Fixture.Create<int>();
+
+            var dummy = Fixture.Build<Dummy>().With(x => x.Id, id).Create();
+            GetMock<IOtherDummyService>().Setup(x => x.GetDummy(id)).Returns(dummy);
+
+            //Act
+            var result = Instance.GetSubs(id);
+
+            //Assert
+            result.Should().BeEquivalentTo(dummy.Subs);
+        }
+    }
+
+    [TestClass]
+    public class CreateIDummy : Tester
+    {
+        [TestMethod]
+        public void Always_CreateDummy()
+        {
+            //Arrange
+
+            //Act
+            //See DummyCustomization class
+            var result = Fixture.Create<IDummy>();
+
+            //Assert
+            result.Should().NotBeNull();
         }
     }
 }
