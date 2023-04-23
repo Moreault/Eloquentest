@@ -4,12 +4,12 @@ namespace ToolBX.Eloquentest;
 
 public class Tester
 {
-    protected IFixture Fixture { get; private set; }
+    protected IFixture Fixture { get; private set; } = null!;
 
     private IList<object> AutoCustomizations => _autocustomizations.Value;
     private readonly Lazy<IList<object>> _autocustomizations = new(() =>
     {
-        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any()).Select(x => Activator.CreateInstance(x)).ToList();
+        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any()).Select(x => Activator.CreateInstance(x)).ToList()!;
     });
 
     [ClassInitialize]
@@ -83,9 +83,9 @@ public class Tester
 
     private MethodInfo GetMethod<T>(T instance, string methodName, params object[] parameters)
     {
-        var methodsWithName = instance.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).Where(x => x.Name == methodName).ToList();
+        var methodsWithName = instance!.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).Where(x => x.Name == methodName).ToList();
         if (!methodsWithName.Any() && instance.GetType().BaseType != null)
-            methodsWithName.AddRange(instance.GetType().BaseType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).Where(x => x.Name == methodName));
+            methodsWithName.AddRange(instance.GetType().BaseType!.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).Where(x => x.Name == methodName));
 
         if (!methodsWithName.Any())
             throw new Exception($"Can't get method '{methodName}' : There is no method by that name with {parameters.Length} parameters on type {instance.GetType()}.");
@@ -136,10 +136,10 @@ public class Tester
         }
     }
 
-    protected TValue GetFieldValue<TInstance, TValue>(TInstance instance, string fieldName)
+    protected TValue? GetFieldValue<TInstance, TValue>(TInstance instance, string fieldName)
     {
         var fieldInfo = GetField(instance, fieldName);
-        return (TValue)fieldInfo.GetValue(instance);
+        return (TValue?)fieldInfo.GetValue(instance);
     }
 
     protected void SetFieldValue<TInstance, TValue>(TInstance instance, string fieldName, TValue value)
@@ -164,20 +164,20 @@ public class Tester
     private FieldInfo FindFieldRecursively(Type type, string name)
     {
         var memberInfo = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-        return memberInfo ?? FindFieldRecursively(type.BaseType, name);
+        return memberInfo ?? FindFieldRecursively(type.BaseType!, name);
     }
 
-    protected TValue GetPropertyValue<TInstance, TValue>(TInstance instance, string propertyName)
+    protected TValue? GetPropertyValue<TInstance, TValue>(TInstance instance, string propertyName)
     {
         var propertyInfo = GetProperty(instance, propertyName);
-        return (TValue)propertyInfo.GetValue(instance);
+        return (TValue?)propertyInfo.GetValue(instance);
     }
 
     protected void SetPropertyValue<TInstance, TValue>(TInstance instance, string propertyName, TValue value)
     {
         var propertyInfo = GetProperty(instance, propertyName);
-        propertyInfo = propertyInfo.DeclaringType.GetProperty(propertyName);
-        propertyInfo.SetValue(instance, value, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null, null, null);
+        propertyInfo = propertyInfo.DeclaringType!.GetProperty(propertyName);
+        propertyInfo!.SetValue(instance, value, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null, null, null);
     }
 
     private PropertyInfo GetProperty<TInstance>(TInstance instance, string propertyName)
@@ -193,9 +193,10 @@ public class Tester
     private PropertyInfo FindPropertyRecursively(Type type, string name)
     {
         var memberInfo = type.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-        return memberInfo ?? FindPropertyRecursively(type.BaseType, name);
+        return memberInfo ?? FindPropertyRecursively(type.BaseType!, name);
     }
 
+#pragma warning disable CS8604
     private static bool _areAssembliesLoaded;
     // Source: https://dotnetstories.com/blog/Dynamically-pre-load-assemblies-in-a-ASPNET-Core-or-any-C-project-en-7155735300
     private static void LoadAllAssemblies(bool includeFramework = false)
@@ -239,6 +240,7 @@ public class Tester
         _areAssembliesLoaded = true;
     }
 }
+#pragma warning restore CS8604
 
 public abstract class Tester<T> : Tester where T : class
 {
@@ -258,7 +260,7 @@ public abstract class Tester<T> : Tester where T : class
     /// Instance of the class that is being tested.
     /// </summary>
     protected T Instance => _instance.Value;
-    private Lazy<T> _instance;
+    private Lazy<T> _instance = null!;
 
     protected Tester()
     {
@@ -406,12 +408,12 @@ public abstract class Tester<T> : Tester where T : class
     /// <summary>
     /// Returns field value by name on <see cref="Instance"/>.
     /// </summary>
-    protected TValue GetFieldValue<TValue>(string fieldName) => GetFieldValue<T, TValue>(Instance, fieldName);
+    protected TValue? GetFieldValue<TValue>(string fieldName) => GetFieldValue<T, TValue>(Instance, fieldName);
 
     /// <summary>
     /// Returns property value by name on <see cref="Instance"/>.
     /// </summary>
-    protected TValue GetPropertyValue<TValue>(string propertyName) => GetPropertyValue<T, TValue>(Instance, propertyName);
+    protected TValue? GetPropertyValue<TValue>(string propertyName) => GetPropertyValue<T, TValue>(Instance, propertyName);
 
     /// <summary>
     /// Sets field value by name on <see cref="Instance"/>.

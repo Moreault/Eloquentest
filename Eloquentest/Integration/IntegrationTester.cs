@@ -2,8 +2,8 @@
 
 internal class ClassInterfaceBinding
 {
-    public Type Interface { get; init; }
-    public Type Service { get; init; }
+    public required Type Interface { get; init; }
+    public required Type Service { get; init; }
 }
 
 public abstract class IntegrationTester<T> : Tester where T : class
@@ -12,11 +12,11 @@ public abstract class IntegrationTester<T> : Tester where T : class
     /// Instance of the class that is being tested.
     /// </summary>
     protected T Instance => _instance.Value;
-    private Lazy<T> _instance;
+    private Lazy<T> _instance = null!;
 
     private readonly IDictionary<Type, object> _services = new Dictionary<Type, object>();
 
-    private static IList<ClassInterfaceBinding> _bindings;
+    private static IList<ClassInterfaceBinding>? _bindings;
 
     /// <summary>
     /// Parameters that were used to instantiate <see cref="Instance"/>.
@@ -43,13 +43,13 @@ public abstract class IntegrationTester<T> : Tester where T : class
             {
                 instancedParameters.Add(InstantiateFromInterface(i));
             }
-            return Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T;
+            return (Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T)!;
         });
     }
 
     private object InstantiateFromInterface(Type serviceInterface)
     {
-        var binding = _bindings.SingleOrDefault(x => x.Interface == serviceInterface);
+        var binding = _bindings!.SingleOrDefault(x => x.Interface == serviceInterface);
         if (binding == null)
         {
             var candidate = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Single(x => x.Name == serviceInterface.Name[1..]);
@@ -58,7 +58,7 @@ public abstract class IntegrationTester<T> : Tester where T : class
                 Interface = serviceInterface,
                 Service = candidate
             };
-            _bindings.Add(binding);
+            _bindings!.Add(binding);
         }
 
         var parameters = binding.Service.GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderBy(x => x.GetParameters().Length).FirstOrDefault()?.GetParameters() ?? Array.Empty<ParameterInfo>();
@@ -70,7 +70,7 @@ public abstract class IntegrationTester<T> : Tester where T : class
             instancedParameters.Add(InstantiateFromInterface(i));
         }
 
-        return Activator.CreateInstance(binding.Service, instancedParameters.ToArray());
+        return Activator.CreateInstance(binding.Service, instancedParameters.ToArray())!;
     }
 
     protected TService GetService<TService>() where TService : class
@@ -87,7 +87,7 @@ public abstract class IntegrationTester<T> : Tester where T : class
                 .Where(x => x.IsClass && !x.IsAbstract && x.GetCustomAttribute<AutoInjectAttribute>() != null)
                 .Select<Type, ClassInterfaceBinding>(x =>
                 {
-                    var attribute = x.GetCustomAttribute<AutoInjectAttribute>();
+                    var attribute = x.GetCustomAttribute<AutoInjectAttribute>()!;
                     if (attribute.Interface != null)
                         return new ClassInterfaceBinding
                         {

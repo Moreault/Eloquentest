@@ -65,7 +65,7 @@ public static class FixtureExtensions
         return fixture.CreateMany<string>(count).Select(x => x.Substring(0, length));
     }
 
-    public static IDictionary<TKey, TValue> CreateDictionary<TKey, TValue>(this IFixture fixture, int count = int.MinValue)
+    public static IDictionary<TKey, TValue> CreateDictionary<TKey, TValue>(this IFixture fixture, int count = int.MinValue) where TKey : notnull
     {
         count = count <= 0 ? fixture.RepeatCount : count;
         return fixture.CreateMany<KeyValuePair<TKey, TValue>>(count).ToDictionary(x => x.Key, x => x.Value);
