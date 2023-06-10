@@ -13,6 +13,8 @@ public class DummyService : IDummyService
     private readonly IDirectory _directory;
     private readonly IOtherDummyService _otherDummyService;
 
+    public DateTime SomeDate { get; init; }
+
     public DummyService(IFile file, IDirectory directory, IOtherDummyService otherDummyService)
     {
         _file = file;

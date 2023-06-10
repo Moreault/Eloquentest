@@ -1,4 +1,4 @@
-using AutoFixture;
+using Microsoft.VisualBasic;
 
 namespace Eloquentest.Sample.Tests;
 
@@ -91,6 +91,22 @@ public class DummyServiceTester
 
             //Assert
             result.Should().NotBeNull();
+        }
+    }
+
+    [TestClass]
+    public class SomeDate : Tester<DummyService>
+    {
+        [TestMethod]
+        public void Always_GenerateDate()
+        {
+            //Arrange
+
+            //Act
+            var result = Instance.SomeDate;
+
+            //Assert
+            result.Should().NotBe(default);
         }
     }
 }

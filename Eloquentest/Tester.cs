@@ -1,16 +1,29 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Reflection;
 
 namespace ToolBX.Eloquentest;
 
 public class Tester
 {
-    protected IFixture Fixture { get; private set; } = null!;
+    protected IFixture Fixture { get; }
 
-    private IList<object> AutoCustomizations => _autocustomizations.Value;
-    private readonly Lazy<IList<object>> _autocustomizations = new(() =>
+    private List<object> AutoCustomizations => _autocustomizations.Value;
+    private readonly Lazy<List<object>> _autocustomizations = new(() =>
     {
-        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any()).Select(x => Activator.CreateInstance(x)).ToList()!;
+        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any()).Select(Activator.CreateInstance).ToList()!;
     });
+
+    public Tester()
+    {
+        Fixture = new Fixture();
+        foreach (var autoCustomization in AutoCustomizations)
+        {
+            if (autoCustomization is ICustomization customization)
+                Fixture.Customize(customization);
+            else if (autoCustomization is ISpecimenBuilder specimenBuilder)
+                Fixture.Customizations.Add(specimenBuilder);
+            else throw new NotSupportedException($"{nameof(AutoCustomizationAttribute)} does not support type '{autoCustomization.GetType()}'");
+        }
+    }
 
     [ClassInitialize]
     public void ClassInitializeOnBaseClass()
@@ -30,15 +43,7 @@ public class Tester
     [TestInitialize]
     public void TestInitializeOnBaseClass()
     {
-        Fixture = new Fixture();
-        foreach (var autoCustomization in AutoCustomizations)
-        {
-            if (autoCustomization is ICustomization customization)
-                Fixture.Customize(customization);
-            else if (autoCustomization is ISpecimenBuilder specimenBuilder)
-                Fixture.Customizations.Add(specimenBuilder);
-            else throw new NotSupportedException($"{nameof(AutoCustomizationAttribute)} does not support type '{autoCustomization.GetType()}'");
-        }
+
 
         InitializeTest();
     }
@@ -271,21 +276,21 @@ public abstract class Tester<T> : Tester where T : class
     {
         _instance = new Lazy<T>(() =>
         {
-            var parameters =
-                typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? Array.Empty<ParameterInfo>();
+            var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? Array.Empty<ParameterInfo>();
 
             var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
 
             foreach (var i in interfaces.Where(x => !_mocks.ContainsKey(x)))
                 AddMock(i);
 
+            var specimenContext = new SpecimenContext(Fixture);
+
             var instancedParameters = new List<object>();
             foreach (var parameterInfo in parameters)
             {
                 if (_overridenConstructorParameters.Any(x => x.GetType() == parameterInfo.ParameterType))
                 {
-                    instancedParameters.Add(
-                        _overridenConstructorParameters.Single(x => x.GetType() == parameterInfo.ParameterType));
+                    instancedParameters.Add(_overridenConstructorParameters.Single(x => x.GetType() == parameterInfo.ParameterType));
                 }
                 else if (parameterInfo.ParameterType.IsAbstract)
                 {
@@ -293,7 +298,7 @@ public abstract class Tester<T> : Tester where T : class
                 }
                 else
                 {
-                    instancedParameters.Add(new SpecimenContext(Fixture).Resolve(parameterInfo.ParameterType));
+                    instancedParameters.Add(specimenContext.Resolve(parameterInfo.ParameterType));
                 }
             }
 
@@ -326,9 +331,7 @@ public abstract class Tester<T> : Tester where T : class
                             foreach (var i in interfaces)
                             {
                                 var splittedInterfaceName = regex.Replace(i.Name, " ").Split(' ');
-                                var similarities = splittedInterfaceName.Sum(x =>
-                                    splittedTypeName.Count(y =>
-                                        x.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
+                                var similarities = splittedInterfaceName.Sum(x => splittedTypeName.Count(y => x.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
 
                                 if (similarities > 0)
                                     searchResult.Add(new InterfaceSearchResult
@@ -340,15 +343,13 @@ public abstract class Tester<T> : Tester where T : class
                             }
 
                             if (!searchResult.Any())
-                                throw new Exception(
-                                    $"Can't inject service automatically : {x.Name} implements {interfaces.Length} interfaces but none of them are close to similar in name.");
+                                throw new Exception($"Can't inject service automatically : {x.Name} implements {interfaces.Length} interfaces but none of them are close to similar in name.");
                             searchResult = searchResult.OrderBy(y => y.IsInherited)
                                 .ThenByDescending(y => y.Similarities).ToList();
                             if (searchResult.Count > 1 &&
                                 searchResult[0].Similarities == searchResult[1].Similarities &&
                                 searchResult[0].IsInherited == searchResult[1].IsInherited)
-                                throw new Exception(
-                                    $"Can't inject service automatically : {x.Name} there is ambiguity between {searchResult[0].Interface.Name} and {searchResult[1].Interface.Name}. Either change interface names or specify the interface to use.");
+                                throw new Exception($"Can't inject service automatically : {x.Name} there is ambiguity between {searchResult[0].Interface.Name} and {searchResult[1].Interface.Name}. Either change interface names or specify the interface to use.");
 
                             return searchResult.First().Interface;
                         });
@@ -363,7 +364,21 @@ public abstract class Tester<T> : Tester where T : class
             }
 
             if (instancedParameters.Any()) _constructorParameters.AddRange(instancedParameters);
-            return (Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T)!;
+            var instance = (Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T)!;
+
+            foreach (var property in instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty))
+            {
+                try
+                {
+                    property.SetValue(instance, specimenContext.Resolve(property.PropertyType));
+                }
+                catch
+                {
+                    //Ignored : We don't want everything to blow up because some properties can't be automatically generated
+                }
+            }
+
+            return instance;
         });
     }
 

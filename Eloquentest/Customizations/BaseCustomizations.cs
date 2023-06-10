@@ -1,7 +1,7 @@
 ﻿namespace ToolBX.Eloquentest.Customizations;
 
 [AutoCustomization]
-public class VersionCustomization : ICustomization
+public class BaseCustomizations : ICustomization
 {
     public void Customize(IFixture fixture)
     {
