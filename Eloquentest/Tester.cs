@@ -120,25 +120,27 @@ public class Tester
         throw new Exception($"Can't invoke method '{methodName}' : There is no method by that name with parameters of types {string.Join(", ", parameters.Select(x => x.GetType()))}.");
     }
 
-    protected void InvokeMethod<T>(T instance, string methodName, params object[] parameters)
+    protected object? InvokeMethod<T>(T instance, string methodName, params object[] parameters)
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
         if (string.IsNullOrWhiteSpace(methodName)) throw new ArgumentNullException(nameof(methodName));
         var methodInfo = GetMethod(instance, methodName, parameters);
-        methodInfo.Invoke(instance, parameters);
+        return methodInfo.Invoke(instance, parameters);
     }
 
-    protected void InvokeMethodAndIgnoreException<TInstance, TException>(TInstance instance, string methodName, params object[] parameters) where TException : Exception
+    protected object? InvokeMethodAndIgnoreException<TInstance, TException>(TInstance instance, string methodName, params object[] parameters) where TException : Exception
     {
         try
         {
-            InvokeMethod(instance, methodName, parameters);
+            return InvokeMethod(instance, methodName, parameters);
         }
         catch (TargetInvocationException e)
         {
             if (e.InnerException is not TException)
                 throw;
         }
+
+        return null;
     }
 
     protected TValue? GetFieldValue<TInstance, TValue>(TInstance instance, string fieldName)
@@ -413,12 +415,12 @@ public abstract class Tester<T> : Tester where T : class
     /// <summary>
     /// Invokes a method by name on <see cref="Instance"/>.
     /// </summary>
-    protected void InvokeMethod(string methodName, params object[] parameters) => InvokeMethod(Instance, methodName, parameters);
+    protected object? InvokeMethod(string methodName, params object[] parameters) => InvokeMethod(Instance, methodName, parameters);
 
     /// <summary>
     /// Invokes a method by name on <see cref="Instance"/>.
     /// </summary>
-    protected void InvokeMethodAndIgnoreException<TException>(string methodName, params object[] parameters) where TException : Exception => InvokeMethodAndIgnoreException<T, TException>(Instance, methodName, parameters);
+    protected object? InvokeMethodAndIgnoreException<TException>(string methodName, params object[] parameters) where TException : Exception => InvokeMethodAndIgnoreException<T, TException>(Instance, methodName, parameters);
 
     /// <summary>
     /// Returns field value by name on <see cref="Instance"/>.
