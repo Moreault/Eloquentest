@@ -4,7 +4,7 @@
 public class ComplexDummyTester
 {
     [TestClass]
-    public class AutomaticCreation : Tester<ComplexDummy>
+    public class AutomaticCreation : AutoFillTester<ComplexDummy>
     {
         [TestMethod]
         public void Always_AutomaticallyGenerateProperties()

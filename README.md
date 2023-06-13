@@ -217,3 +217,6 @@ It works right out of the box if you already use AutoInject in your regular code
 
 1.0.X -> 1.1.X
 GetRandom and GetRandomIndex methods have been removed from Eloquentest. Please import and use ToolBX.OPEX from nuget.org instead.
+
+2.0.X -> 2.1.0
+`AutoFillTester<T>` was addded. There have been minor changes in when things are instantiated which may affect some users in `Tester` and `Tester<T>`.

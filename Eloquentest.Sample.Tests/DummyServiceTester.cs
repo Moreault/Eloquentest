@@ -95,7 +95,7 @@ public class DummyServiceTester
     }
 
     [TestClass]
-    public class SomeDate : Tester<DummyService>
+    public class SomeDate : AutoFillTester<DummyService>
     {
         [TestMethod]
         public void Always_GenerateDate()

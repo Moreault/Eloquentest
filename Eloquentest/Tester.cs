@@ -1,8 +1,10 @@
-﻿using System.Reflection;
+﻿namespace ToolBX.Eloquentest;
 
-namespace ToolBX.Eloquentest;
-
-public class Tester
+/// <summary>
+/// Basic tester which provides a Fixture and AutoCustomization support.
+/// Use for static, extension methods and constructors.
+/// </summary>
+public abstract class Tester
 {
     protected IFixture Fixture { get; }
 
@@ -12,7 +14,7 @@ public class Tester
         return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any()).Select(Activator.CreateInstance).ToList()!;
     });
 
-    public Tester()
+    protected Tester()
     {
         Fixture = new Fixture();
         foreach (var autoCustomization in AutoCustomizations)
@@ -43,8 +45,6 @@ public class Tester
     [TestInitialize]
     public void TestInitializeOnBaseClass()
     {
-
-
         InitializeTest();
     }
 
@@ -249,6 +249,10 @@ public class Tester
 }
 #pragma warning restore CS8604
 
+/// <summary>
+/// Provides a Fixture, AutoCustomization support and an Instance property.
+/// Use for complex entities and services.
+/// </summary>
 public abstract class Tester<T> : Tester where T : class
 {
     private List<Type> _autoInjects = new();
@@ -367,21 +371,14 @@ public abstract class Tester<T> : Tester where T : class
 
             if (instancedParameters.Any()) _constructorParameters.AddRange(instancedParameters);
             var instance = (Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T)!;
-
-            foreach (var property in instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty))
-            {
-                try
-                {
-                    property.SetValue(instance, specimenContext.Resolve(property.PropertyType));
-                }
-                catch
-                {
-                    //Ignored : We don't want everything to blow up because some properties can't be automatically generated
-                }
-            }
-
+            AfterCreateInstance(instance);
             return instance;
         });
+    }
+
+    protected internal virtual void AfterCreateInstance(T instance)
+    {
+
     }
 
     private void AddMock(Type type)
