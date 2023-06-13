@@ -205,6 +205,9 @@ public class GameObjectTester
 }
 ```
 
+## AutoFillTester
+Works just like `Tester<T>` except that it automatically fills your Instance's `public` `set` and `init` with values. Works in a lot of cases but you might want to stick with `Tester<T>` for others.
+
 ## Integration tests
 The Eloquentest.Integration namespace (available on nuget.org as a separate package) provides tools to leverage MSTest to execute code without mocking all while using the Eloquentest structure and syntax you may already be familiar with.
 
