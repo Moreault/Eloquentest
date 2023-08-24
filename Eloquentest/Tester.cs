@@ -6,26 +6,7 @@
 /// </summary>
 public abstract class Tester
 {
-    protected IFixture Fixture { get; }
-
-    private List<object> AutoCustomizations => _autocustomizations.Value;
-    private readonly Lazy<List<object>> _autocustomizations = new(() =>
-    {
-        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any()).Select(Activator.CreateInstance).ToList()!;
-    });
-
-    protected Tester()
-    {
-        Fixture = new Fixture();
-        foreach (var autoCustomization in AutoCustomizations)
-        {
-            if (autoCustomization is ICustomization customization)
-                Fixture.Customize(customization);
-            else if (autoCustomization is ISpecimenBuilder specimenBuilder)
-                Fixture.Customizations.Add(specimenBuilder);
-            else throw new NotSupportedException($"{nameof(AutoCustomizationAttribute)} does not support type '{autoCustomization.GetType()}'");
-        }
-    }
+    protected IFixture Fixture { get; } = FixtureProvider.Create();
 
     [ClassInitialize]
     public void ClassInitializeOnBaseClass()
