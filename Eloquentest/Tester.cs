@@ -6,11 +6,14 @@
 /// </summary>
 public abstract class Tester
 {
+    private static bool _isClassInitialized;
+
     protected IFixture Fixture { get; } = FixtureProvider.Create();
 
     [ClassInitialize]
     public void ClassInitializeOnBaseClass()
     {
+        _isClassInitialized = true;
         InitializeClass();
     }
 
@@ -26,6 +29,8 @@ public abstract class Tester
     [TestInitialize]
     public void TestInitializeOnBaseClass()
     {
+        if (!_isClassInitialized)
+            ClassInitializeOnBaseClass();
         InitializeTest();
     }
 
