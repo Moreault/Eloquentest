@@ -6,7 +6,7 @@
 /// </summary>
 public abstract class Tester
 {
-    private bool _isClassInitialized;
+    private static bool _isClassInitialized;
 
     protected IFixture Fixture { get; } = FixtureProvider.Create();
 
