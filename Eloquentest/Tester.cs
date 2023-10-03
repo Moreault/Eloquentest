@@ -6,14 +6,24 @@
 /// </summary>
 public abstract class Tester
 {
-    private static bool _isClassInitialized;
+    private static readonly Dictionary<Type, bool> InitializedClasses = new();
+
+    private bool IsClassInitialized
+    {
+        get
+        {
+            InitializedClasses.TryGetValue(GetType(), out var result);
+            return result;
+        }
+        set => InitializedClasses[GetType()] = value;
+    }
 
     protected IFixture Fixture { get; } = FixtureProvider.Create();
 
     [ClassInitialize]
     public void ClassInitializeOnBaseClass()
     {
-        _isClassInitialized = true;
+        IsClassInitialized = true;
         InitializeClass();
     }
 
@@ -29,7 +39,7 @@ public abstract class Tester
     [TestInitialize]
     public void TestInitializeOnBaseClass()
     {
-        if (!_isClassInitialized)
+        if (!IsClassInitialized)
             ClassInitializeOnBaseClass();
         InitializeTest();
     }
