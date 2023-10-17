@@ -2,7 +2,10 @@
 
 public static class FixtureProvider
 {
-    public static readonly List<object> AutoCustomizations = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any()).Select(Activator.CreateInstance).ToList()!;
+    public static readonly List<object> AutoCustomizations = AppDomain.CurrentDomain.GetAssemblies()
+        .SelectMany(x => x.GetTypes()).Where(y => y.GetCustomAttributes(typeof(AutoCustomizationAttribute), true).Any())
+        .OrderBy(x => x.GetCustomAttribute<AutoCustomizationAttribute>()!.Order)
+        .Select(Activator.CreateInstance).ToList()!;
 
     public static IFixture Create()
     {

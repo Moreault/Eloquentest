@@ -1,6 +1,6 @@
 ﻿namespace ToolBX.Eloquentest.Customizations;
 
-[AutoCustomization]
+[AutoCustomization(Order = AutoCustomizationAttribute.CustomizationOrder.Early)]
 public class BaseCustomizations : ICustomization
 {
     public void Customize(IFixture fixture)

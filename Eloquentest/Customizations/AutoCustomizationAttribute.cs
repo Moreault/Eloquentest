@@ -6,4 +6,12 @@
 [AttributeUsage(AttributeTargets.Class)]
 public class AutoCustomizationAttribute : Attribute
 {
+    public enum CustomizationOrder
+    {
+        Early,
+        Unimportant,
+        Late
+    }
+
+    public CustomizationOrder Order { get; set; } = CustomizationOrder.Unimportant;
 }

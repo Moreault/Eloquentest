@@ -1,6 +1,6 @@
 ﻿namespace ToolBX.Eloquentest.Customizations.SpecimenBuilders;
 
-[AutoCustomization]
+[AutoCustomization(Order = AutoCustomizationAttribute.CustomizationOrder.Early)]
 public class ImmutableListSpecimenBuilder : ISpecimenBuilder
 {
     public object Create(object request, ISpecimenContext context)
