@@ -6,6 +6,8 @@
 /// </summary>
 public abstract class Tester
 {
+    public TestContext TestContext { get; set; } = null!;
+
     private static readonly Dictionary<Type, bool> InitializedClasses = new();
 
     private bool IsClassInitialized
