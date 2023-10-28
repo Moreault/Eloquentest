@@ -476,4 +476,23 @@ public abstract class Tester<T> : Tester where T : class
         GetMock<IServiceProvider>().Setup(x => x.GetService(type)).Returns(_mocks[type].Object);
     }
 
+    /// <summary>
+    /// Automatically tests your method with null or empty strings.
+    /// </summary>
+    protected void WhenIsNullOrEmpty(Action<string> action)
+    {
+        if (action is null) throw new ArgumentNullException(nameof(action));
+        foreach (var datarow in new[] { "", null! })
+            action.Invoke(datarow);
+    }
+
+    /// <summary>
+    /// Automatically tests your method with null, empty and white space strings.
+    /// </summary>
+    protected void WhenIsNullOrWhiteSpace(Action<string> action)
+    {
+        if (action is null) throw new ArgumentNullException(nameof(action));
+        foreach (var datarow in new[] { "", null!, " ", "\n", "\r", "\t" })
+            action.Invoke(datarow);
+    }
 }

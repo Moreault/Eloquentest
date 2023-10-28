@@ -1,9 +1,7 @@
-using Microsoft.VisualBasic;
-
 namespace Eloquentest.Sample.Tests;
 
 [TestClass]
-public class DummyServiceTester
+public class DummyServiceTest
 {
     [TestClass]
     public class DeleteFiles : Tester<DummyService>
@@ -108,5 +106,37 @@ public class DummyServiceTester
             //Assert
             result.Should().NotBe(default);
         }
+    }
+
+    [TestClass]
+    public class DeleteFile : Tester<DummyService>
+    {
+        [TestMethod]
+        public void WhenFilenameIsNullOrWhitespace_Throw() => WhenIsNullOrWhiteSpace(filename =>
+        {
+            //Arrange
+            
+            //Act
+            var action = () => Instance.DeleteFile(filename);
+
+            //Assert
+            action.Should().Throw<ArgumentNullException>().WithParameterName(nameof(filename));
+        });
+    }
+
+    [TestClass]
+    public class DeleteDirectory : Tester<DummyService>
+    {
+        [TestMethod]
+        public void WhenDirectoryIsNullOrEmpty_Throw() => WhenIsNullOrEmpty(directory =>
+        {
+            //Arrange
+
+            //Act
+            var action = () => Instance.DeleteDirectory(directory);
+
+            //Assert
+            action.Should().Throw<ArgumentNullException>().WithParameterName(nameof(directory));
+        });
     }
 }
