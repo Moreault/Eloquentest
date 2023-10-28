@@ -213,6 +213,59 @@ The Eloquentest.Integration namespace (available on nuget.org as a separate pack
 
 IntegrationTester and IntegreationTester<T> replace Tester and Tester<T> and there are no mocks. 
 
+## Empty string cases
+You can test `string.IsNullOrEmpty` and `string.IsNullOrWhitespace` cases using the following methods.
+
+```cs
+[TestMethod]
+public void WhenDirectoryIsNullOrEmpty_Throw() => WhenIsNullOrEmpty(directory =>
+{
+    //Arrange
+
+    //Act
+    var action = () => Instance.DeleteDirectory(directory);
+
+    //Assert
+    action.Should().Throw<ArgumentNullException>().WithParameterName(nameof(directory));
+});
+```
+
+```cs
+[TestMethod]
+public void WhenFilenameIsNullOrWhitespace_Throw() => WhenIsNullOrWhiteSpace(filename =>
+{
+    //Arrange
+            
+    //Act
+    var action = () => Instance.DeleteFile(filename);
+
+    //Assert
+    action.Should().Throw<ArgumentNullException>().WithParameterName(nameof(filename));
+});
+```
+
+These helper methods will execute your tests automatically using all cases of empty, null and white spaces without having to rely on `[DataRow]`. The method above is the equivalent of this :
+
+```cs
+[TestMethod]
+[DataRow("")]
+[DataRow(" ")]
+[DataRow(null)]
+[DataRow("\n")]
+[DataRow("\r")]
+[DataRow("\t")]
+public void WhenFilenameIsNullOrWhitespace_Throw(string filename)
+{
+    //Arrange
+            
+    //Act
+    var action = () => Instance.DeleteFile(filename);
+
+    //Assert
+    action.Should().Throw<ArgumentNullException>().WithParameterName(nameof(filename));
+});
+```
+
 ### Setup
 It works right out of the box if you already use AutoInject in your regular code.
 
