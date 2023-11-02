@@ -1,4 +1,6 @@
-﻿namespace ToolBX.Eloquentest.Extensions;
+﻿using System.Numerics;
+
+namespace ToolBX.Eloquentest.Extensions;
 
 public static class FixtureExtensions
 {
@@ -115,14 +117,18 @@ public static class FixtureExtensions
         return fixture.Create<Generator<T>>().Where(x => x.CompareTo(value) >= 0).Distinct().Take(count);
     }
 
-    public static T CreateBetween<T>(this IFixture fixture, T minValue, T maxValue, int count = int.MinValue) where T : struct, IComparable, IComparable<T>, IConvertible, IEquatable<T>, IFormattable
+    public static T CreateBetween<T>(this IFixture fixture, T minValue, T maxValue, int count = int.MinValue) where T : INumber<T>
     {
         return fixture.CreateManyBetween(minValue, maxValue).First();
     }
 
-    public static IEnumerable<T> CreateManyBetween<T>(this IFixture fixture, T minValue, T maxValue, int count = int.MinValue) where T : struct, IComparable, IComparable<T>, IConvertible, IEquatable<T>, IFormattable
+    public static IEnumerable<T> CreateManyBetween<T>(this IFixture fixture, T minValue, T maxValue, int count = int.MinValue) where T : INumber<T>
     {
         count = count <= 0 ? fixture.RepeatCount : count;
+        var output = new List<T>();
+        for (var i = 0; i < count; i++)
+            output.Add(PseudoRandom.Next(minValue, maxValue));
+
         return fixture.Create<Generator<T>>().Where(x => x.CompareTo(minValue) >= 0 && x.CompareTo(maxValue) <= 0).Distinct().Take(count);
     }
 
@@ -157,4 +163,26 @@ public static class FixtureExtensions
     /// Returns a floating-point value between 0 and 1.
     /// </summary>
     public static float CreateNormalizedFloat(this IFixture fixture) => fixture.CreateBetween(0f, 100f) / 100.0f;
+}
+
+//TODO Put in Mathemancy.Randomness?
+public static class PseudoRandom
+{
+    private static Random _random = new();
+
+    public static int Seed
+    {
+        set => _random = new Random(value);
+    }
+
+    public static T Next<T>(T max) where T : INumber<T> => Next(T.Zero, max);
+
+    public static T Next<T>(T min, T max) where T : INumber<T> => T.CreateChecked(_random.NextInt64(Convert.ToInt64(min), Convert.ToInt64(max)));
+
+    /// <summary>
+    /// Returns a random number between 0.0 and 1.0
+    /// </summary>
+    public static T NextFloating<T>() where T : IFloatingPoint<T> => T.CreateChecked(_random.NextDouble());
+
+    public static T Next<T>() where T : INumber<T>, IMinMaxValue<T> => T.CreateChecked(_random.NextInt64(Convert.ToInt64(T.MinValue), Convert.ToInt64(T.MaxValue)));
 }
