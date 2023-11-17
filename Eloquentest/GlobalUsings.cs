@@ -17,4 +17,5 @@ global using Microsoft.Extensions.Options;
 global using ToolBX.AutoInject;
 global using ToolBX.Eloquentest.Customizations;
 global using ToolBX.Eloquentest.Customizations.SpecimenBuilders;
+global using ToolBX.Eloquentest.Extensions;
 global using ToolBX.Reflection4Humans.Extensions;

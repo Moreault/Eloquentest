@@ -3,6 +3,12 @@
 
 A simple to use .NET unit testing framework built on top of MSTest and Moq. It also includes built-in support for services that are injected using [AutoInject].
 
+:warning: Eloquentest is moving away from base `Tester` classes in version 3.0.0 and will instead rely on extension and utility methods to give you the tools to build 
+your own base `Tester` classes that can implement whichever framework that you like. The current implementation using Moq and AutoFixture will likely be part of an 
+`Eloquentest.Classic` package and may become deprecated in version 4.0.0. 
+
+Eloquentest will also be separated into multiple packages supporting different frameworks such as Moq , NSubstitute, AutoFixture, etc.
+
 ## Getting started
 
 Here is the dumbest service you can imagine.
