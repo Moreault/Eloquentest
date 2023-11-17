@@ -9,14 +9,45 @@ public static class ObjectExtensions
     {
         if (source is null)
             throw new ArgumentNullException(nameof(source));
+
         try
         {
             var json = JsonSerializer.Serialize(source);
-            return JsonSerializer.Deserialize<T>(json)!;
+            return JsonSerializer.Deserialize<T>(json) ?? throw new Exception($"Couldn't deserialize {source}");
+        }
+        catch
+        {
+            return source.ReflectionClone();
+        }
+    }
+
+    private static T ReflectionClone<T>(this T source)
+    {
+        try
+        {
+            var fields = typeof(T).GetAllFields();
+            var properties = typeof(T).GetAllProperties();
+
+            var clone = Activator.CreateInstance<T>()!;
+
+            foreach (var field in fields)
+            {
+                var value = field.GetValue(source);
+                field.SetValue(clone, value);
+            }
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(source);
+                property.SetValue(clone, value);
+            }
+
+            return clone;
+
         }
         catch (Exception e)
         {
-            throw new Exception($"Unable to clone object of type {source.GetType().GetHumanReadableName()}", e);
+            throw new Exception($"Unable to clone object of type {source!.GetType().GetHumanReadableName()}", e);
         }
     }
 }

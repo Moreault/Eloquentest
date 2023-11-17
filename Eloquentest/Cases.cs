@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace ToolBX.Eloquentest;
+﻿namespace ToolBX.Eloquentest;
 
 /// <summary>
 /// Test cases to common problems.
@@ -33,12 +31,12 @@ public static class Cases
     public static void TestValueEquality<T>(IFixture? fixture = null)
     {
         fixture ??= FixtureProvider.Create();
-        //TODO Use GetAllMethods() from 2.2.0
-        var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance).Where(x => x.Name == "Equals" && x.GetParameters().Length == 1 && x.ReturnType == typeof(bool)).ToList();
+
+        var methods = typeof(T).GetAllMethods(x => x.Name == "Equals" && x.ReturnType == typeof(bool) && x.HasParameters(1));
 
         var testedMethod = string.Empty;
         var testCase = "None";
-        T a = default!;
+        T a = fixture.Create<T>();
         T b = default!;
         try
         {
@@ -162,5 +160,18 @@ public static class Cases
 
             throw new Exception(sb.ToString());
         }
+    }
+
+    /// <summary>
+    /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
+    /// </summary>
+    public static void IsJsonSerializable<T>(IFixture? fixture = null)
+    {
+        fixture ??= FixtureProvider.Create();
+
+        var instance = fixture.Create<T>();
+        var json = JsonSerializer.Serialize(instance);
+        var deserialized = JsonSerializer.Deserialize<T>(json);
+        Assert.IsTrue(instance.ValueEquals(deserialized));
     }
 }
