@@ -112,7 +112,7 @@ public class DummyServiceTest
     public class DeleteFile : Tester<DummyService>
     {
         [TestMethod]
-        public void WhenFilenameIsNullOrWhitespace_Throw() => Cases.Strings.WhenIsNullOrWhiteSpace(filename =>
+        public void WhenFilenameIsNullOrWhitespace_Throw() => Cases.WhenIsNullOrWhiteSpace(filename =>
         {
             //Arrange
             
@@ -128,7 +128,7 @@ public class DummyServiceTest
     public class DeleteDirectory : Tester<DummyService>
     {
         [TestMethod]
-        public void WhenDirectoryIsNullOrEmpty_Throw() => Cases.Strings.WhenIsNullOrEmpty(directory =>
+        public void WhenDirectoryIsNullOrEmpty_Throw() => Cases.WhenIsNullOrEmpty(directory =>
         {
             //Arrange
 
