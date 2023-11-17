@@ -68,7 +68,7 @@ public static class Cases
                 testCase = "When A and B are different objects of the same type";
                 a = fixture.Create<T>();
                 b = fixture.Create<T>();
-                Assert.IsFalse((bool)equals.Invoke(a, new object[] { b })!);
+                Assert.IsFalse((bool)equals.Invoke(a, new object[] { b! })!);
             }
 
             var equalsOperator = typeof(T).GetMethod("op_Equality", BindingFlags.Public | BindingFlags.Static);
@@ -85,28 +85,28 @@ public static class Cases
                     testCase = "When A is null but B is not";
                     a = default!;
                     b = fixture.Create<T>();
-                    Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a, b })!);
+                    Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a, b! })!);
 
                     testCase = "When B is null but A is not";
                     a = fixture.Create<T>();
                     b = default!;
-                    Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a, b })!);
+                    Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a!, b })!);
                 }
 
                 testCase = "When A and B are the same reference";
                 a = fixture.Create<T>();
                 b = a;
-                Assert.IsTrue((bool)equalsOperator.Invoke(null, new object[] { a, b })!);
+                Assert.IsTrue((bool)equalsOperator.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
                 b = a.Clone();
-                Assert.IsTrue((bool)equalsOperator.Invoke(null, new object[] { a, b })!);
+                Assert.IsTrue((bool)equalsOperator.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are different objects of the same type";
                 a = fixture.Create<T>();
                 b = fixture.Create<T>();
-                Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a, b })!);
+                Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a!, b! })!);
             }
 
             // Test using !=
@@ -125,28 +125,28 @@ public static class Cases
                     testCase = "When A is null but B is not";
                     a = default!;
                     b = fixture.Create<T>();
-                    Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a, b })!);
+                    Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a, b! })!);
 
                     testCase = "When B is null but A is not";
                     a = fixture.Create<T>();
                     b = default!;
-                    Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a, b })!);
+                    Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a!, b })!);
                 }
 
                 testCase = "When A and B are the same reference";
                 a = fixture.Create<T>();
                 b = a;
-                Assert.IsFalse((bool)notEqualsOperator.Invoke(null, new object[] { a, b })!);
+                Assert.IsFalse((bool)notEqualsOperator.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
                 b = a.Clone();
-                Assert.IsFalse((bool)notEqualsOperator.Invoke(null, new object[] { a, b })!);
+                Assert.IsFalse((bool)notEqualsOperator.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are different objects of the same type";
                 a = fixture.Create<T>();
                 b = fixture.Create<T>();
-                Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a, b })!);
+                Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a!, b! })!);
             }
         }
         catch
@@ -156,7 +156,7 @@ public static class Cases
             if (a != null)
                 sb.AppendLine($"A : {JsonSerializer.Serialize(a)}");
             if (b != null)
-                sb.AppendLine($"B : {JsonSerializer.Serialize(a)}");
+                sb.AppendLine($"B : {JsonSerializer.Serialize(b)}");
 
             throw new Exception(sb.ToString());
         }
