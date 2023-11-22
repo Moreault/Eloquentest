@@ -5,8 +5,13 @@ public class ValueEqualityMethodTest : Tester
 {
     public class Dummy : IEquatable<Dummy>
     {
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Name);
+        }
+
         public int Id { get; init; }
-        public string Name { get; init; }
+        public string Name { get; init; } = null!;
 
         public bool Equals(Dummy? other)
         {
@@ -22,6 +27,16 @@ public class ValueEqualityMethodTest : Tester
         public static bool operator !=(Dummy? a, Dummy? b) => !(a == b);
     }
 
+    public sealed record DummyRecord
+    {
+        public int Id { get; init; }
+        public string Name { get; init; } = null!;
+        public IFormatProvider FormatProvider { get; init; } = null!;
+    }
+
     [TestMethod]
     public void Equals_WhenValuesAreEqual_ReturnTrue() => Cases.TestValueEquality<Dummy>();
+
+    [TestMethod]
+    public void Equals_WhenObjectsAreRecords_ReturnTrue() => Cases.TestValueEquality<DummyRecord>();
 }
