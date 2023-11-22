@@ -1,7 +1,9 @@
-﻿namespace Eloquentest.Sample.Tests;
+﻿using ToolBX.Eloquentest;
+
+namespace Eloquentest.AutoEnsure.Tests;
 
 [TestClass]
-public class ValueEqualityMethodTest : Tester
+public class EnsureValueEqualityTest : Tester
 {
     public class Dummy : IEquatable<Dummy>
     {
@@ -35,8 +37,8 @@ public class ValueEqualityMethodTest : Tester
     }
 
     [TestMethod]
-    public void Equals_WhenValuesAreEqual_ReturnTrue() => Cases.TestValueEquality<Dummy>();
+    public void Equals_WhenValuesAreEqual_ReturnTrue() => Ensure.ValueEquality<Dummy>();
 
     [TestMethod]
-    public void Equals_WhenObjectsAreRecords_ReturnTrue() => Cases.TestValueEquality<DummyRecord>();
+    public void Equals_WhenObjectsAreRecords_ReturnTrue() => Ensure.ValueEquality<DummyRecord>();
 }

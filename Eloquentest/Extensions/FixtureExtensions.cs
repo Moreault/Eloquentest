@@ -163,6 +163,16 @@ public static class FixtureExtensions
     /// Returns a floating-point value between 0 and 1.
     /// </summary>
     public static float CreateNormalizedFloat(this IFixture fixture) => fixture.CreateBetween(0f, 100f) / 100.0f;
+
+    public static object Create(this IFixture fixture, Type type)
+    {
+        if (fixture is null) throw new ArgumentNullException(nameof(fixture));
+        if (type is null) throw new ArgumentNullException(nameof(type));
+
+        var method = typeof(SpecimenFactory).GetSingleMethod(x => x.Name == nameof(Fixture.Create) && x.IsPublic && x.ContainsGenericParameters && x.HasParameters<ISpecimenBuilder>())!;
+        var generic = method.MakeGenericMethod(type);
+        return generic.Invoke(null, new object?[] { fixture })!;
+    }
 }
 
 //TODO Put in Mathemancy.Randomness?

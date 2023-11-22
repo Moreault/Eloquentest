@@ -1,9 +1,9 @@
-﻿namespace Eloquentest.Sample.Tests;
+﻿namespace Eloquentest.Tests;
 
 public abstract class SerializationTester<T> : Tester
 {
     [TestMethod]
-    public void WhenIsReferenceDummy_ShouldBeJsonSerializable() => Cases.IsJsonSerializable<T>(Fixture);
+    public void WhenIsReferenceDummy_ShouldBeJsonSerializable() => Ensure.IsJsonSerializable<T>(Fixture);
 }
 
 [TestClass]
@@ -12,7 +12,7 @@ public sealed class ReferenceSerializationTest : SerializationTester<ReferenceSe
     public sealed class Dummy
     {
         public int Id { get; init; }
-        public string Name { get; init; }
+        public string Name { get; init; } = null!;
     }
 }
 

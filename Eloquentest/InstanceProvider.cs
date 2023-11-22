@@ -46,9 +46,10 @@ public static class InstanceProvider
         var instancedParameters = new List<object>();
         foreach (var parameterInfo in parameters)
         {
-            if (constructorParameterOverrides.Any(x => x.GetType() == parameterInfo.ParameterType))
+            var overriden = constructorParameterOverrides.SingleOrDefault(x => x.GetType().IsAssignableTo(parameterInfo.ParameterType));
+            if (overriden is not null)
             {
-                instancedParameters.Add(constructorParameterOverrides.Single(x => x.GetType() == parameterInfo.ParameterType));
+                instancedParameters.Add(overriden);
             }
             else if (parameterInfo.ParameterType.IsAbstract)
             {

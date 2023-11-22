@@ -3,7 +3,7 @@
 /// <summary>
 /// Test cases to common problems.
 /// </summary>
-public static class Cases
+public static class Ensure
 {
     /// <summary>
     /// Automatically tests your method with null or empty strings.
@@ -28,7 +28,7 @@ public static class Cases
     /// <summary>
     /// Automatically tests all equality cases between two objects.
     /// </summary>
-    public static void TestValueEquality<T>(IFixture? fixture = null)
+    public static void ValueEquality<T>(IFixture? fixture = null)
     {
         fixture ??= FixtureProvider.Create();
 
@@ -36,7 +36,7 @@ public static class Cases
 
         var testedMethod = string.Empty;
         var testCase = "None";
-        T a = fixture.Create<T>();
+        var a = fixture.Create<T>();
         T b = default!;
         try
         {
@@ -173,5 +173,23 @@ public static class Cases
         var json = JsonSerializer.Serialize(instance);
         var deserialized = JsonSerializer.Deserialize<T>(json);
         Assert.IsTrue(instance.ValueEquals(deserialized));
+    }
+
+    /// <summary>
+    /// Tests that property has basic get/set functionality.
+    /// </summary>
+    public static void HasBasicGetSetFunctionality<T>(IFixture? fixture = null)
+    {
+        fixture ??= FixtureProvider.Create();
+
+        var properties = typeof(T).GetAllProperties(x => x.IsGet() && x.IsSet() && x.IsPublic() && x.IsInstance());
+
+        foreach (var property in properties)
+        {
+            var instance = fixture.Create<T>();
+            var value = fixture.Create(property.PropertyType);
+            property.SetValue(instance, value);
+            Assert.AreEqual(value, property.GetValue(instance));
+        }
     }
 }
