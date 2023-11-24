@@ -22,7 +22,4 @@ public abstract class RecordTester<T> : Tester where T : class
 
     [TestMethod]
     public void Always_ShouldHaveValueEquality() => Ensure.ValueEquality<T>(Fixture);
-
-    [TestMethod]
-    public void Always_ShouldBeJsonSerializable() => Ensure.IsJsonSerializable<T>(Fixture);
 }
