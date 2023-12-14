@@ -1,6 +1,4 @@
-﻿using ToolBX.Eloquentest;
-
-namespace Eloquentest.AutoEnsure.Tests;
+﻿namespace Eloquentest.Tests;
 
 [TestClass]
 public class EnsureValueEqualityTest : Tester

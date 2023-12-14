@@ -163,6 +163,45 @@ public static class Ensure
     }
 
     /// <summary>
+    /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
+    /// </summary>
+    public static void ConsistentHashCode<T>(IFixture? fixture = null)
+    {
+        fixture ??= FixtureProvider.Create();
+
+        T a = default!;
+        T b = default!;
+
+        var testCase = "None";
+        try
+        {
+            testCase = "When A and B are different objects of the same type";
+            a = fixture.Create<T>()!;
+            b = fixture.Create<T>()!;
+            Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
+
+            testCase = "When A and B are equivalent objects with different references";
+            a = fixture.Create<T>()!;
+            b = a.Clone()!;
+            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+
+            testCase = "When A and B are the same reference";
+            a = fixture.Create<T>()!;
+            b = a;
+            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+        }
+
+        catch
+        {
+            var sb = new StringBuilder($"Hash code consistency failed : {testCase}");
+
+            sb.AppendLine($"A : {JsonSerializer.Serialize(a)}");
+            sb.AppendLine($"B : {JsonSerializer.Serialize(b)}");
+
+            throw new Exception(sb.ToString());
+        }
+    }
+    /// <summary>
     /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
     /// </summary>
     public static void IsJsonSerializable<T>(IFixture? fixture = null)
