@@ -175,17 +175,17 @@ public static class Ensure
         var testCase = "None";
         try
         {
-            testCase = "When A and B are different objects of the same type";
+            testCase = "When A and B are different objects of the same type then they should not be equal";
             a = fixture.Create<T>()!;
             b = fixture.Create<T>()!;
             Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
 
-            testCase = "When A and B are equivalent objects with different references";
+            testCase = "When A and B are equivalent objects with different references then they should be equal";
             a = fixture.Create<T>()!;
             b = a.Clone()!;
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
 
-            testCase = "When A and B are the same reference";
+            testCase = "When A and B are the same reference then they should be equal";
             a = fixture.Create<T>()!;
             b = a;
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
