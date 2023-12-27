@@ -69,10 +69,15 @@ public static class Ensure
                 a = fixture.Create<T>();
                 b = fixture.Create<T>();
                 Assert.IsFalse((bool)equals.Invoke(a, new object[] { b! })!);
+
+                testCase = "Generic error";
+                testedMethod = string.Empty;
+                a = default!;
+                b = default!;
             }
 
-            var equalsOperator = typeof(T).GetMethod("op_Equality", BindingFlags.Public | BindingFlags.Static);
-            if (equalsOperator != null)
+            var equalityOperators = typeof(T).GetAllMethods(x => x.Name == "op_Equality");
+            foreach (var method in equalityOperators)
             {
                 testedMethod = "op_Equality (==)";
                 if (typeof(T).IsClass)
@@ -80,38 +85,43 @@ public static class Ensure
                     testCase = "When A and B are null";
                     a = default!;
                     b = default!;
-                    Assert.IsTrue((bool)equalsOperator.Invoke(null, new object[] { a, b })!);
+                    Assert.IsTrue((bool)method.Invoke(null, new object[] { a, b })!);
 
                     testCase = "When A is null but B is not";
                     a = default!;
                     b = fixture.Create<T>();
-                    Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a, b! })!);
+                    Assert.IsFalse((bool)method.Invoke(null, new object[] { a, b! })!);
 
                     testCase = "When B is null but A is not";
                     a = fixture.Create<T>();
                     b = default!;
-                    Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a!, b })!);
+                    Assert.IsFalse((bool)method.Invoke(null, new object[] { a!, b })!);
                 }
 
                 testCase = "When A and B are the same reference";
                 a = fixture.Create<T>();
                 b = a;
-                Assert.IsTrue((bool)equalsOperator.Invoke(null, new object[] { a!, b! })!);
+                Assert.IsTrue((bool)method.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
                 b = a.Clone();
-                Assert.IsTrue((bool)equalsOperator.Invoke(null, new object[] { a!, b! })!);
+                Assert.IsTrue((bool)method.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are different objects of the same type";
                 a = fixture.Create<T>();
                 b = fixture.Create<T>();
-                Assert.IsFalse((bool)equalsOperator.Invoke(null, new object[] { a!, b! })!);
+                Assert.IsFalse((bool)method.Invoke(null, new object[] { a!, b! })!);
+
+                testCase = "Generic error";
+                testedMethod = string.Empty;
+                a = default!;
+                b = default!;
             }
 
             // Test using !=
-            var notEqualsOperator = typeof(T).GetMethod("op_Inequality", BindingFlags.Public | BindingFlags.Static);
-            if (notEqualsOperator != null)
+            var inequalityOperators = typeof(T).GetAllMethods(x => x.Name == "op_Inequality");
+            foreach (var method in inequalityOperators)
             {
                 testedMethod = "op_Inequality (!=)";
 
@@ -120,34 +130,40 @@ public static class Ensure
                     testCase = "When A and B are null";
                     a = default!;
                     b = default!;
-                    Assert.IsFalse((bool)notEqualsOperator.Invoke(null, new object[] { a, b })!);
+                    Assert.IsFalse((bool)method.Invoke(null, new object[] { a, b })!);
 
                     testCase = "When A is null but B is not";
                     a = default!;
                     b = fixture.Create<T>();
-                    Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a, b! })!);
+                    Assert.IsTrue((bool)method.Invoke(null, new object[] { a, b! })!);
 
                     testCase = "When B is null but A is not";
                     a = fixture.Create<T>();
                     b = default!;
-                    Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a!, b })!);
+                    Assert.IsTrue((bool)method.Invoke(null, new object[] { a!, b })!);
                 }
 
                 testCase = "When A and B are the same reference";
                 a = fixture.Create<T>();
                 b = a;
-                Assert.IsFalse((bool)notEqualsOperator.Invoke(null, new object[] { a!, b! })!);
+                Assert.IsFalse((bool)method.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
                 b = a.Clone();
-                Assert.IsFalse((bool)notEqualsOperator.Invoke(null, new object[] { a!, b! })!);
+                Assert.IsFalse((bool)method.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are different objects of the same type";
                 a = fixture.Create<T>();
                 b = fixture.Create<T>();
-                Assert.IsTrue((bool)notEqualsOperator.Invoke(null, new object[] { a!, b! })!);
+                Assert.IsTrue((bool)method.Invoke(null, new object[] { a!, b! })!);
+
+                testCase = "Generic error";
+                testedMethod = string.Empty;
+                a = default!;
+                b = default!;
             }
+
         }
         catch
         {

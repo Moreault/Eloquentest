@@ -1,4 +1,6 @@
-﻿namespace Eloquentest.Tests;
+﻿using Eloquentest.Tests.Dummies;
+
+namespace Eloquentest.Tests;
 
 [TestClass]
 public class EnsureValueEqualityTest : Tester
@@ -39,4 +41,7 @@ public class EnsureValueEqualityTest : Tester
 
     [TestMethod]
     public void Equals_WhenObjectsAreRecords_ReturnTrue() => Ensure.ValueEquality<DummyRecord>();
+
+    [TestMethod]
+    public void Equals_WhenObjectIsComplexCollection_ReturnTrue() => Ensure.ValueEquality<ComplexCollection<DummyRecord>>();
 }
