@@ -38,6 +38,10 @@ public static class ObjectExtensions
 
             foreach (var property in properties)
             {
+                var indexParameters = property.GetIndexParameters();
+                if (indexParameters.Length > 0)
+                    continue;
+
                 var value = property.GetValue(source);
                 property.SetValue(clone, value);
             }

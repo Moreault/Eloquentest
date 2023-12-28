@@ -32,6 +32,15 @@ public static class Ensure
     {
         fixture ??= FixtureProvider.Create();
 
+        try
+        {
+            fixture.Create<T>().Clone();
+        }
+        catch (Exception innerException)
+        {
+            throw new Exception($"Unable to clone object of type {typeof(T).GetHumanReadableName()}", innerException);
+        }
+
         var methods = typeof(T).GetAllMethods(x => x.Name == "Equals" && x.ReturnType == typeof(bool) && x.HasParameters(1));
 
         var testedMethod = string.Empty;
