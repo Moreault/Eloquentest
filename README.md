@@ -219,7 +219,10 @@ The Eloquentest.Integration namespace (available on nuget.org as a separate pack
 
 IntegrationTester and IntegreationTester<T> replace Tester and Tester<T> and there are no mocks. 
 
-## Empty string cases
+## Ensure
+The `Ensure` class comes with common test case helpers that would otherwise require you to write a lot of boilerplate code.
+
+### WhenIsNullOrEmpty and WhenIsNullOrWhiteSpace
 You can test `string.IsNullOrEmpty` and `string.IsNullOrWhitespace` cases using the following methods.
 
 ```cs
@@ -270,6 +273,28 @@ public void WhenFilenameIsNullOrWhitespace_Throw(string filename)
     //Assert
     action.Should().Throw<ArgumentNullException>().WithParameterName(nameof(filename));
 });
+```
+
+### ValueEquality
+You can test value equality using the following methods.
+
+* All methods named `Equals` that have a `bool` return type and a single parameter
+* All `==` operators
+* All `!=` operators
+
+```cs
+[TestMethod]
+public void EnsureValueEquality() => Ensure.ValueEquality<YourType>();
+```
+
+This method will automatically test all cases of equality and inequality for your type. Do note that it will not test equals methods that check equality with another unrelated type. You will still need to test those manually.
+
+### ConsistentHashCode
+Tests that two equivalent instances of the same type produce the same hash code and that two different instances of the same type produce different hash codes.
+
+```cs
+[TestMethod]
+public void EnsureConsistentHashCode() => Ensure.ConsistentHashCode<YourType>();
 ```
 
 ### Setup

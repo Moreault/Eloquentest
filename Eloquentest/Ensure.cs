@@ -49,9 +49,13 @@ public static class Ensure
         T b = default!;
         try
         {
-            foreach (var equals in methods)
+            foreach (var method in methods)
             {
-                testedMethod = $"{equals.Name}({equals.GetParameters().Single().GetType().Name})";
+                var parameterType = method.GetParameters().First();
+                if (!typeof(T).IsAssignableTo(parameterType.ParameterType))
+                    continue;
+
+                testedMethod = $"{method.Name}({method.GetParameters().Single().GetType().Name})";
 
                 testCase = "When B is null";
                 if (typeof(T).IsClass)
@@ -59,25 +63,25 @@ public static class Ensure
                     a = fixture.Create<T>();
                     b = default!;
 
-                    Assert.IsFalse((bool)equals.Invoke(a, new object[] { b })!);
+                    Assert.IsFalse((bool)method.Invoke(a, new object[] { b })!);
                 }
 
                 testCase = "When A and B are the same reference";
                 a = fixture.Create<T>();
                 b = a;
-                Assert.IsTrue((bool)equals.Invoke(a, new object[] { b! })!);
+                Assert.IsTrue((bool)method.Invoke(a, new object[] { b! })!);
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
                 b = a.Clone();
 
                 Assert.IsFalse(ReferenceEquals(a, b));
-                Assert.IsTrue((bool)equals.Invoke(a, new object[] { b! })!);
+                Assert.IsTrue((bool)method.Invoke(a, new object[] { b! })!);
 
                 testCase = "When A and B are different objects of the same type";
                 a = fixture.Create<T>();
                 b = fixture.Create<T>();
-                Assert.IsFalse((bool)equals.Invoke(a, new object[] { b! })!);
+                Assert.IsFalse((bool)method.Invoke(a, new object[] { b! })!);
 
                 testCase = "Generic error";
                 testedMethod = string.Empty;
@@ -88,6 +92,10 @@ public static class Ensure
             var equalityOperators = typeof(T).GetAllMethods(x => x.Name == "op_Equality");
             foreach (var method in equalityOperators)
             {
+                var parameters = method.GetParameters();
+                if (parameters.Any(x => !x.ParameterType.IsAssignableFrom(typeof(T))))
+                    continue;
+
                 testedMethod = "op_Equality (==)";
                 if (typeof(T).IsClass)
                 {
@@ -132,8 +140,11 @@ public static class Ensure
             var inequalityOperators = typeof(T).GetAllMethods(x => x.Name == "op_Inequality");
             foreach (var method in inequalityOperators)
             {
-                testedMethod = "op_Inequality (!=)";
+                var parameters = method.GetParameters();
+                if (parameters.Any(x => !x.ParameterType.IsAssignableFrom(typeof(T))))
+                    continue;
 
+                testedMethod = "op_Inequality (!=)";
                 if (typeof(T).IsClass)
                 {
                     testCase = "When A and B are null";
@@ -174,7 +185,7 @@ public static class Ensure
             }
 
         }
-        catch
+        catch (Exception innerException)
         {
             var sb = new StringBuilder($"Value equality test failed : '{testCase}' with method '{testedMethod}'");
 
@@ -183,7 +194,7 @@ public static class Ensure
             if (b != null)
                 sb.AppendLine($"B : {JsonSerializer.Serialize(b)}");
 
-            throw new Exception(sb.ToString());
+            throw new Exception(sb.ToString(), innerException is AssertFailedException ? null : innerException);
         }
     }
 
