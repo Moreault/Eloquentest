@@ -267,16 +267,33 @@ public static class Ensure
             throw new Exception(sb.ToString());
         }
     }
+
     /// <summary>
     /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
     /// </summary>
-    public static void IsJsonSerializable<T>(IFixture? fixture = null)
+    public static void IsJsonSerializable<T>() => IsJsonSerializable<T>(FixtureProvider.Create(), new JsonSerializerOptions());
+
+    /// <summary>
+    /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
+    /// </summary>
+    public static void IsJsonSerializable<T>(IFixture fixture) => IsJsonSerializable<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
+
+    /// <summary>
+    /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
+    /// </summary>
+    public static void IsJsonSerializable<T>(JsonSerializerOptions options) => IsJsonSerializable<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
+
+    /// <summary>
+    /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
+    /// </summary>
+    public static void IsJsonSerializable<T>(IFixture fixture, JsonSerializerOptions options)
     {
-        fixture ??= FixtureProvider.Create();
+        if (fixture is null) throw new ArgumentNullException(nameof(fixture));
+        if (options is null) throw new ArgumentNullException(nameof(options));
 
         var instance = fixture.Create<T>();
-        var json = JsonSerializer.Serialize(instance);
-        var deserialized = JsonSerializer.Deserialize<T>(json);
+        var json = JsonSerializer.Serialize(instance, options);
+        var deserialized = JsonSerializer.Deserialize<T>(json, options);
         Assert.IsTrue(instance.ValueEquals(deserialized));
     }
 
