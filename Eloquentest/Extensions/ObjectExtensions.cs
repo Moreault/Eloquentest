@@ -5,15 +5,15 @@ public static class ObjectExtensions
     /// <summary>
     /// Clones an object for unit testing purposes.
     /// </summary>
-    public static T Clone<T>(this T source)
+    public static T Clone<T>(this T source, JsonSerializerOptions? options = null)
     {
         if (source is null)
             throw new ArgumentNullException(nameof(source));
 
         try
         {
-            var json = JsonSerializer.Serialize(source);
-            return JsonSerializer.Deserialize<T>(json) ?? throw new Exception($"Couldn't deserialize {source}");
+            var json = JsonSerializer.Serialize(source, options);
+            return JsonSerializer.Deserialize<T>(json, options) ?? throw new Exception($"Couldn't deserialize {source}");
         }
         catch
         {

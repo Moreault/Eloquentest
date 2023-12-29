@@ -28,13 +28,31 @@ public static class Ensure
     /// <summary>
     /// Automatically tests all equality cases between two objects.
     /// </summary>
-    public static void ValueEquality<T>(IFixture? fixture = null)
+    public static void ValueEquality<T>() => ValueEquality<T>(FixtureProvider.Create(), new JsonSerializerOptions());
+
+    /// <summary>
+    /// Automatically tests all equality cases between two objects.
+    /// </summary>
+    public static void ValueEquality<T>(IFixture fixture) => ValueEquality<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
+
+    /// <summary>
+    /// Automatically tests all equality cases between two objects.
+    /// </summary>
+    public static void ValueEquality<T>(JsonSerializerOptions options) => ValueEquality<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
+
+    /// <summary>
+    /// Automatically tests all equality cases between two objects.
+    /// </summary>
+    public static void ValueEquality<T>(IFixture fixture, JsonSerializerOptions options)
     {
-        fixture ??= FixtureProvider.Create();
+        if (fixture is null) throw new ArgumentNullException(nameof(fixture));
+        if (options is null) throw new ArgumentNullException(nameof(options));
 
         try
         {
-            fixture.Create<T>().Clone();
+            var original = fixture.Create<T>();
+            var clone = original.Clone(options);
+            Assert.IsTrue(original.ValueEquals(clone));
         }
         catch (Exception innerException)
         {
@@ -73,7 +91,7 @@ public static class Ensure
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
-                b = a.Clone();
+                b = a.Clone(options);
 
                 Assert.IsFalse(ReferenceEquals(a, b));
                 Assert.IsTrue((bool)method.Invoke(a, new object[] { b! })!);
@@ -122,7 +140,7 @@ public static class Ensure
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
-                b = a.Clone();
+                b = a.Clone(options);
                 Assert.IsTrue((bool)method.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are different objects of the same type";
@@ -170,7 +188,7 @@ public static class Ensure
 
                 testCase = "When A and B are equivalent objects with different references";
                 a = fixture.Create<T>();
-                b = a.Clone();
+                b = a.Clone(options);
                 Assert.IsFalse((bool)method.Invoke(null, new object[] { a!, b! })!);
 
                 testCase = "When A and B are different objects of the same type";

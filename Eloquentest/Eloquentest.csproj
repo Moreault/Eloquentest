@@ -4,7 +4,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>2.2.0-beta93</Version>
+		<Version>2.2.0-beta94</Version>
 		<RootNamespace>ToolBX.$(AssemblyName)</RootNamespace>
 		<PackageId>ToolBX.$(AssemblyName)</PackageId>
 		<Product>ToolBX.$(AssemblyName)</Product>
@@ -35,7 +35,7 @@
 		<PackageReference Include="Moq" Version="4.20.70" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
 		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0-beta6" />
-		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="2.2.0-beta7" />
+		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="2.2.0-beta8" />
 	</ItemGroup>
 
 </Project>
