@@ -10,8 +10,9 @@ public abstract class RecordTester<T> : Tester where T : class
     {
         //Arrange
         var instance = Fixture.Create<T>();
-
-        var constructor = typeof(T).GetSingleConstructor(x => x.IsPrivate && x.IsInstance() && x.HasParameters<T>());
+        
+        //This constructor for a sealed record is private but it's protected for a non-sealed record
+        var constructor = typeof(T).GetSingleConstructor(x => (x.IsPrivate || x.IsProtected()) && x.IsInstance() && x.HasParameters<T>());
 
         //Act
         var result = (T)constructor.Invoke(new object?[] { instance });
