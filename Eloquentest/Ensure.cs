@@ -199,6 +199,36 @@ public static class Ensure
     }
 
     /// <summary>
+    /// Tests equals methods, equality and inequality operators between the two objects for equality.
+    /// </summary>
+    public static void Equality<T1, T2>(T1? current, T2? other)
+    {
+        var equalsMethod = typeof(T1).GetSingleMethod(x => x.Name == "Equals" && x.ReturnType == typeof(bool) && x.HasParameters<T2>());
+        Assert.IsTrue((bool)equalsMethod.Invoke(current, new object[] { other! })!);
+
+        var equalityOperator = typeof(T1).GetSingleMethod(x => x.Name == "op_Equality" && x.HasParameters<T1, T2>());
+        Assert.IsTrue((bool)equalityOperator.Invoke(null, new object[] { current!, other! })!);
+
+        var inequalityOperator = typeof(T1).GetSingleMethod(x => x.Name == "op_Inequality" && x.HasParameters<T1, T2>());
+        Assert.IsFalse((bool)inequalityOperator.Invoke(null, new object[] { current!, other! })!);
+    }
+
+    /// <summary>
+    /// Tests equals methods, equality and inequality operators between the two objects for inequality.
+    /// </summary>
+    public static void Inequality<T1, T2>(T1 current, T2 other)
+    {
+        var equalsMethod = typeof(T1).GetSingleMethod(x => x.Name == "Equals" && x.ReturnType == typeof(bool) && x.HasParameters<T2>());
+        Assert.IsFalse((bool)equalsMethod.Invoke(current, new object[] { other! })!);
+
+        var equalityOperator = typeof(T1).GetSingleMethod(x => x.Name == "op_Equality" && x.HasParameters<T1, T2>());
+        Assert.IsFalse((bool)equalityOperator.Invoke(null, new object[] { current!, other! })!);
+
+        var inequalityOperator = typeof(T1).GetSingleMethod(x => x.Name == "op_Inequality" && x.HasParameters<T1, T2>());
+        Assert.IsTrue((bool)inequalityOperator.Invoke(null, new object[] { current!, other! })!);
+    }
+
+    /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
     public static void ConsistentHashCode<T>(IFixture? fixture = null)

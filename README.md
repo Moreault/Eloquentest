@@ -287,7 +287,41 @@ You can test value equality using the following methods.
 public void EnsureValueEquality() => Ensure.ValueEquality<YourType>();
 ```
 
-This method will automatically test all cases of equality and inequality for your type. Do note that it will not test equals methods that check equality with another unrelated type. You will still need to test those manually.
+This method will automatically test all cases of equality and inequality for your type. Do note that it will not test equals methods that check equality with another unrelated type. You will still need to test those manually or use `Ensure.Equality` and `Ensure.Inequality`.
+
+### Equality
+Tests that two objects are equal using the `Equals` method, the `==` and `!=` operators. This method is more granular than `ValueEquality` and will only test equality between two specific objects using the aforementioned methods. This helps reduce unit test redundancy by not requiring you to write different tests for each method or equality operator.
+
+```cs
+[TestMethod]
+public void Always_EnsureEqualityBetweenEquivalentObjects() 
+{
+	//Arrange
+	var obj1 = Fixture.Create<YourType>();
+	var obj2 = obj1.Clone();
+
+	//Act
+	//Assert
+	Ensure.Equality(obj1, obj2);
+}
+```
+
+### Inequality
+Tests that two objects are _not_ equal using the `Equals` method, the `==` and `!=` operators. It does the same thing as `Equality` but for inequality.
+
+```cs
+[TestMethod]
+public void Always_EnsureInequalityBetweenDifferentObjects() 
+{
+	//Arrange
+	var obj1 = Fixture.Create<YourType>();
+	var obj2 = Fixture.Create<YourType>();
+
+	//Act
+	//Assert
+	Ensure.Inequality(obj1, obj2);
+}
+```
 
 ### ConsistentHashCode
 Tests that two equivalent instances of the same type produce the same hash code and that two different instances of the same type produce different hash codes.
