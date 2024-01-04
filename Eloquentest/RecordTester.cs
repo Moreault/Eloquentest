@@ -10,7 +10,7 @@ public abstract class RecordTester<T> : Tester where T : class
     {
         //Arrange
         var instance = Fixture.Create<T>();
-        
+
         //This constructor for a sealed record is private but it's protected for a non-sealed record
         var constructor = typeof(T).GetSingleConstructor(x => (x.IsPrivate || x.IsProtected()) && x.IsInstance() && x.HasParameters<T>());
 
@@ -22,8 +22,8 @@ public abstract class RecordTester<T> : Tester where T : class
     }
 
     [TestMethod]
-    public void Always_ShouldHaveValueEquality() => Ensure.ValueEquality<T>(Fixture);
+    public void Ensure_ValueEquality() => Ensure.ValueEquality<T>(Fixture, JsonSerializerOptions);
 
     [TestMethod]
-    public void Always_IdGetsAndSets() => Ensure.HasBasicGetSetFunctionality<T>(Fixture);
+    public void Ensure_ConsistentHashCode() => Ensure.ConsistentHashCode<T>(Fixture, JsonSerializerOptions);
 }

@@ -1,4 +1,7 @@
-﻿namespace ToolBX.Eloquentest;
+﻿using System.Collections;
+using System.Reflection.Emit;
+
+namespace ToolBX.Eloquentest;
 
 /// <summary>
 /// Test cases to common problems.
@@ -48,16 +51,7 @@ public static class Ensure
         if (fixture is null) throw new ArgumentNullException(nameof(fixture));
         if (options is null) throw new ArgumentNullException(nameof(options));
 
-        try
-        {
-            var original = fixture.Create<T>();
-            var clone = original.Clone(options);
-            Assert.IsTrue(original.ValueEquals(clone));
-        }
-        catch (Exception innerException)
-        {
-            throw new Exception($"Unable to clone object of type {typeof(T).GetHumanReadableName()}", innerException);
-        }
+        IsCloneable<T>(fixture, options);
 
         var methods = typeof(T).GetAllMethods(x => x.Name == "Equals" && x.ReturnType == typeof(bool) && x.HasParameters(1));
 
@@ -216,6 +210,20 @@ public static class Ensure
         }
     }
 
+    private static void IsCloneable<T>(IFixture fixture, JsonSerializerOptions options)
+    {
+        try
+        {
+            var original = fixture.Create<T>();
+            var clone = original.Clone(options);
+            Assert.IsTrue(original.ValueEquals(clone));
+        }
+        catch (Exception innerException)
+        {
+            throw new Exception($"Unable to clone object of type {typeof(T).GetHumanReadableName()}", innerException);
+        }
+    }
+
     /// <summary>
     /// Tests equals methods, equality and inequality operators between the two objects for equality.
     /// </summary>
@@ -249,9 +257,27 @@ public static class Ensure
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ConsistentHashCode<T>(IFixture? fixture = null)
+    public static void ConsistentHashCode<T>() => ConsistentHashCode<T>(FixtureProvider.Create(), new JsonSerializerOptions());
+
+    /// <summary>
+    /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
+    /// </summary>
+    public static void ConsistentHashCode<T>(IFixture fixture) => ConsistentHashCode<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
+
+    /// <summary>
+    /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
+    /// </summary>
+    public static void ConsistentHashCode<T>(JsonSerializerOptions options) => ConsistentHashCode<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
+
+    /// <summary>
+    /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
+    /// </summary>
+    public static void ConsistentHashCode<T>(IFixture fixture, JsonSerializerOptions options)
     {
-        fixture ??= FixtureProvider.Create();
+        if (fixture is null) throw new ArgumentNullException(nameof(fixture));
+        if (options is null) throw new ArgumentNullException(nameof(options));
+
+        IsCloneable<T>(fixture, options);
 
         T a = default!;
         T b = default!;
@@ -266,7 +292,7 @@ public static class Ensure
 
             testCase = "When A and B are equivalent objects with different references then they should be equal";
             a = fixture.Create<T>()!;
-            b = a.Clone()!;
+            b = a.Clone(options)!;
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
 
             testCase = "When A and B are the same reference then they should be equal";
@@ -316,7 +342,7 @@ public static class Ensure
     }
 
     /// <summary>
-    /// Tests that property has basic get/set functionality.
+    /// Tests that every property on <see cref="T"/> with public getter and setter accessors function as intended.
     /// </summary>
     public static void HasBasicGetSetFunctionality<T>(IFixture? fixture = null)
     {
@@ -331,5 +357,54 @@ public static class Ensure
             property.SetValue(instance, value);
             Assert.AreEqual(value, property.GetValue(instance));
         }
+    }
+
+    /// <summary>
+    /// Tests that the specified property has basic get/set functionality.
+    /// </summary>
+    public static void HasBasicGetSetFunctionality<T>(string propertyName) => HasBasicGetSetFunctionality<T>(FixtureProvider.Create(), propertyName);
+
+    /// <summary>
+    /// Tests that the specified property has basic get/set functionality.
+    /// </summary>
+    public static void HasBasicGetSetFunctionality<T>(IFixture fixture, string propertyName)
+    {
+        if (fixture is null) throw new ArgumentNullException(nameof(fixture));
+        if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException(nameof(propertyName));
+
+        var propertyInfo = typeof(T).GetSingleProperty(propertyName);
+
+        var instance = fixture.Create<T>();
+        var value = fixture.Create(propertyInfo.PropertyType);
+
+        propertyInfo.SetValue(instance, value);
+        var retrievedValue = propertyInfo.GetValue(instance);
+        Assert.AreEqual(value, retrievedValue);
+    }
+
+    /// <summary>
+    /// Tests that a collection correctly enumerates.
+    /// </summary>
+    public static void EnumeratesAllItems<TCollection, TItem>(IFixture? fixture = null) where TCollection : IEnumerable<TItem>
+    {
+        fixture ??= FixtureProvider.Create();
+
+        var instance = fixture.Create<TCollection>()!;
+        Assert.IsTrue(instance.Any());
+
+        var enumeratedItems = new List<TItem>();
+        foreach (var item in instance)
+            enumeratedItems.Add(item);
+
+        Assert.IsTrue(instance.SequenceEqual(enumeratedItems));
+
+        enumeratedItems.Clear();
+
+        var nonGeneric = (IEnumerable)instance;
+
+        foreach (var item in nonGeneric)
+            enumeratedItems.Add((TItem)item);
+
+        Assert.IsTrue(instance.SequenceEqual(enumeratedItems));
     }
 }

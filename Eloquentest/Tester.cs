@@ -8,6 +8,9 @@ public abstract class Tester
 {
     public TestContext TestContext { get; set; } = null!;
 
+    protected JsonSerializerOptions JsonSerializerOptions => _jsonSerializerOptions.Value;
+    private Lazy<JsonSerializerOptions> _jsonSerializerOptions = null!;
+
     private static readonly Dictionary<Type, bool> InitializedClasses = new();
 
     private bool IsClassInitialized
@@ -43,6 +46,7 @@ public abstract class Tester
     {
         if (!IsClassInitialized)
             ClassInitializeOnBaseClass();
+        _jsonSerializerOptions = new(() => new JsonSerializerOptions());
         InitializeTest();
     }
 

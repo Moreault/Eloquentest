@@ -21,4 +21,5 @@ global using ToolBX.Eloquentest.Customizations;
 global using ToolBX.Eloquentest.Customizations.SpecimenBuilders;
 global using ToolBX.Eloquentest.Extensions;
 global using ToolBX.Reflection4Humans.Extensions;
+global using ToolBX.Reflection4Humans.TypeFetcher;
 global using ToolBX.Reflection4Humans.ValueEquality;

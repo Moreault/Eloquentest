@@ -331,6 +331,16 @@ Tests that two equivalent instances of the same type produce the same hash code 
 public void EnsureConsistentHashCode() => Ensure.ConsistentHashCode<YourType>();
 ```
 
+### Customizations
+Eloquentest comes with a few customizations and specimen builders for base .NET types that AutoFixture does not support by default such as :
+
+* System.Version
+* System.IFormatProvider
+* System.Collections.Immutable.ImmutableList<T>
+* System.Collections.Generic.Stack<T>
+
+As long as you use `Tester` as a base class for your tests, these customizations will be automatically applied to your `Fixture` instance.
+
 ### Setup
 It works right out of the box if you already use AutoInject in your regular code.
 
