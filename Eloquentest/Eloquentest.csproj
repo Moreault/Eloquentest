@@ -34,8 +34,8 @@
 		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
 		<PackageReference Include="Moq" Version="4.20.70" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0-beta6" />
-		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="2.2.0-beta8" />
+		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0-beta7" />
+		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="2.2.0-beta9" />
 	</ItemGroup>
 
 </Project>
