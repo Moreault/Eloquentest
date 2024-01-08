@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="ToolBX.AutoInject" Version="2.2.0-beta7" />
-	  <PackageReference Include="ToolBX.NetAbstractions" Version="2.2.0-beta1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0-beta7" />
+		<PackageReference Include="ToolBX.NetAbstractions" Version="2.2.0-beta1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Eloquentest\Eloquentest.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Eloquentest\Eloquentest.csproj" />
+	</ItemGroup>
 
 </Project>
