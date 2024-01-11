@@ -24,8 +24,8 @@ public sealed class EnsureHasConsistentHashCodeTest : RecordTester<EnsureHasCons
     }
 
     [TestMethod]
-    public void WhenValuesAreEqual_ReturnSameHashCode() => Ensure.ConsistentHashCode<Dummy>();
+    public void WhenValuesAreEqual_ReturnSameHashCode() => Ensure.ValueHashCode<Dummy>();
 
     [TestMethod]
-    public void WhenHasReadOnlyLists_ReturnSameHashCode() => Ensure.ConsistentHashCode<Splitted<Dummy>>();
+    public void WhenHasReadOnlyLists_ReturnSameHashCode() => Ensure.ValueHashCode<Splitted<Dummy>>();
 }

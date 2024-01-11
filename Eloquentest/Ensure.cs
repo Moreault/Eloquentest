@@ -257,22 +257,22 @@ public static class Ensure
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ConsistentHashCode<T>() => ConsistentHashCode<T>(FixtureProvider.Create(), new JsonSerializerOptions());
+    public static void ValueHashCode<T>() => ValueHashCode<T>(FixtureProvider.Create(), new JsonSerializerOptions());
 
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ConsistentHashCode<T>(IFixture fixture) => ConsistentHashCode<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
+    public static void ValueHashCode<T>(IFixture fixture) => ValueHashCode<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
 
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ConsistentHashCode<T>(JsonSerializerOptions options) => ConsistentHashCode<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
+    public static void ValueHashCode<T>(JsonSerializerOptions options) => ValueHashCode<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
 
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ConsistentHashCode<T>(IFixture fixture, JsonSerializerOptions options)
+    public static void ValueHashCode<T>(IFixture fixture, JsonSerializerOptions options)
     {
         if (fixture is null) throw new ArgumentNullException(nameof(fixture));
         if (options is null) throw new ArgumentNullException(nameof(options));

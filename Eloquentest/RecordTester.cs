@@ -25,5 +25,5 @@ public abstract class RecordTester<T> : Tester where T : class
     public void Ensure_ValueEquality() => Ensure.ValueEquality<T>(Fixture, JsonSerializerOptions);
 
     [TestMethod]
-    public void Ensure_ConsistentHashCode() => Ensure.ConsistentHashCode<T>(Fixture, JsonSerializerOptions);
+    public void Ensure_ConsistentHashCode() => Ensure.ValueHashCode<T>(Fixture, JsonSerializerOptions);
 }
