@@ -88,10 +88,16 @@ public abstract class IntegrationTester<T> : Tester where T : class
                 .Select<Type, ClassInterfaceBinding>(x =>
                 {
                     var attribute = x.GetCustomAttribute<AutoInjectAttribute>()!;
-                    if (attribute.Interface != null)
+                    if (attribute is AutoInjectAttribute nonGeneric && nonGeneric.Interface != null)
                         return new ClassInterfaceBinding
                         {
-                            Interface = attribute.Interface,
+                            Interface = nonGeneric.Interface,
+                            Service = x
+                        };
+                    if (attribute.GetType().GetGenericArguments().Any())
+                        return new ClassInterfaceBinding
+                        {
+                            Interface = attribute.GetType().GetGenericArguments().Single(),
                             Service = x
                         };
 

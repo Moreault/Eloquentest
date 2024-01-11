@@ -1,6 +1,4 @@
-﻿using ToolBX.Eloquentest.Extensions;
-
-namespace ToolBX.Eloquentest;
+﻿namespace ToolBX.Eloquentest;
 
 /// <summary>
 /// Basic tester which provides a Fixture and AutoCustomization support.
@@ -9,6 +7,9 @@ namespace ToolBX.Eloquentest;
 public abstract class Tester
 {
     public TestContext TestContext { get; set; } = null!;
+
+    protected JsonSerializerOptions JsonSerializerOptions => _jsonSerializerOptions.Value;
+    private Lazy<JsonSerializerOptions> _jsonSerializerOptions = null!;
 
     private static readonly Dictionary<Type, bool> InitializedClasses = new();
 
@@ -45,6 +46,7 @@ public abstract class Tester
     {
         if (!IsClassInitialized)
             ClassInitializeOnBaseClass();
+        _jsonSerializerOptions = new(() => new JsonSerializerOptions());
         InitializeTest();
     }
 
@@ -86,49 +88,17 @@ public abstract class Tester
 
     }
 
-    private MethodInfo GetMethod<T>(T instance, string methodName, params object[] parameters)
-    {
-        var methodsWithName = instance!.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).Where(x => x.Name == methodName).ToList();
-        if (!methodsWithName.Any() && instance.GetType().BaseType != null)
-            methodsWithName.AddRange(instance.GetType().BaseType!.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).Where(x => x.Name == methodName));
-
-        if (!methodsWithName.Any())
-            throw new Exception($"Can't get method '{methodName}' : There is no method by that name with {parameters.Length} parameters on type {instance.GetType()}.");
-
-        if (methodsWithName.Count == 1)
-            return methodsWithName.Single();
-
-        var methodsWithSameNumberOfParameters = methodsWithName.Where(x => x.GetParameters().Length == parameters.Length).ToList();
-        if (methodsWithSameNumberOfParameters.Count == 1)
-            return methodsWithSameNumberOfParameters.Single();
-
-        if (parameters.Any(x => x == null))
-            throw new Exception($"Can't get method '{methodName}' : There are {methodsWithSameNumberOfParameters.Count} methods with this name and the same amount of parameters but the right one can't be determined because at least one of the parameters passed to {nameof(InvokeMethod)} is null.");
-
-        foreach (var m in methodsWithSameNumberOfParameters)
-        {
-            for (var i = 0; i < parameters.Length; i++)
-            {
-                if (m.GetParameters()[i].ParameterType != parameters.GetType())
-                    break;
-
-                if (i == parameters.Length)
-                    return m;
-            }
-        }
-
-        throw new Exception($"Can't invoke method '{methodName}' : There is no method by that name with parameters of types {string.Join(", ", parameters.Select(x => x.GetType()))}.");
-    }
-
     protected object? InvokeMethod<T>(T instance, string methodName, params object[] parameters)
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
         if (string.IsNullOrWhiteSpace(methodName)) throw new ArgumentNullException(nameof(methodName));
-        var methodInfo = GetMethod(instance, methodName, parameters);
+
+        var methodInfo = instance.GetType().GetSingleMethod(methodName);
         return methodInfo.Invoke(instance, parameters);
     }
 
-    protected object? InvokeMethodAndIgnoreException<TInstance, TException>(TInstance instance, string methodName, params object[] parameters) where TException : Exception
+    protected object? InvokeMethodAndIgnoreException<TInstance, TException>(TInstance instance, string methodName,
+        params object[] parameters) where TException : Exception
     {
         try
         {
@@ -145,109 +115,30 @@ public abstract class Tester
 
     protected TValue? GetFieldValue<TInstance, TValue>(TInstance instance, string fieldName)
     {
-        var fieldInfo = GetField(instance, fieldName);
+        var fieldInfo = typeof(TInstance).GetSingleField(fieldName);
         return (TValue?)fieldInfo.GetValue(instance);
     }
 
     protected void SetFieldValue<TInstance, TValue>(TInstance instance, string fieldName, TValue value)
     {
-        var fieldInfo = GetField(instance, fieldName);
+        var fieldInfo = typeof(TInstance).GetSingleField(fieldName);
         fieldInfo.SetValue(instance, value);
-    }
-
-    private FieldInfo GetField<TInstance>(TInstance instance, string fieldName)
-    {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
-        if (string.IsNullOrWhiteSpace(fieldName)) throw new ArgumentNullException(nameof(fieldName));
-
-        var fieldInfo = FindFieldRecursively(instance.GetType(), fieldName);
-
-        if (fieldInfo == null)
-            throw new Exception($"Can't get the value of field '{fieldName}' : There is no field by that name on type {instance.GetType()}.");
-
-        return fieldInfo;
-    }
-
-    private FieldInfo FindFieldRecursively(Type type, string name)
-    {
-        var memberInfo = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-        return memberInfo ?? FindFieldRecursively(type.BaseType!, name);
     }
 
     protected TValue? GetPropertyValue<TInstance, TValue>(TInstance instance, string propertyName)
     {
-        var propertyInfo = GetProperty(instance, propertyName);
+        var propertyInfo = typeof(TInstance).GetSingleProperty(propertyName);
         return (TValue?)propertyInfo.GetValue(instance);
     }
 
     protected void SetPropertyValue<TInstance, TValue>(TInstance instance, string propertyName, TValue value)
     {
-        var propertyInfo = GetProperty(instance, propertyName);
+        var propertyInfo = typeof(TInstance).GetSingleProperty(propertyName);
         propertyInfo = propertyInfo.DeclaringType!.GetProperty(propertyName);
-        propertyInfo!.SetValue(instance, value, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null, null, null);
-    }
-
-    private PropertyInfo GetProperty<TInstance>(TInstance instance, string propertyName)
-    {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
-        if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException(nameof(propertyName));
-        var propertyInfo = FindPropertyRecursively(instance.GetType(), propertyName);
-        if (propertyInfo == null)
-            throw new Exception($"Can't get the value of property '{propertyName}' : There is no property by that name on type {instance.GetType()}.");
-        return propertyInfo;
-    }
-
-    private PropertyInfo FindPropertyRecursively(Type type, string name)
-    {
-        var memberInfo = type.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-        return memberInfo ?? FindPropertyRecursively(type.BaseType!, name);
-    }
-
-#pragma warning disable CS8604
-    private static bool _areAssembliesLoaded;
-    // Source: https://dotnetstories.com/blog/Dynamically-pre-load-assemblies-in-a-ASPNET-Core-or-any-C-project-en-7155735300
-    private static void LoadAllAssemblies(bool includeFramework = false)
-    {
-        if (_areAssembliesLoaded) return;
-
-        var loaded = new ConcurrentDictionary<string, bool>();
-
-        bool ShouldLoad(string assemblyName)
-        {
-            return (includeFramework || IsNotNetFramework(assemblyName)) && !loaded.ContainsKey(assemblyName);
-        }
-
-        bool IsNotNetFramework(string assemblyName)
-        {
-            return !assemblyName.StartsWith("Microsoft.")
-                   && !assemblyName.StartsWith("System.")
-                   && !assemblyName.StartsWith("Newtonsoft.")
-                   && assemblyName != "netstandard";
-        }
-
-        void LoadReferencedAssembly(Assembly assembly)
-        {
-            // Check all referenced assemblies of the specified assembly
-            foreach (var an in assembly.GetReferencedAssemblies().Where(a => ShouldLoad(a.FullName)))
-            {
-                // Load the assembly and load its dependencies
-                LoadReferencedAssembly(Assembly.Load(an)); // AppDomain.CurrentDomain.Load(name)
-                loaded.TryAdd(an.FullName, true);
-            }
-        }
-
-        foreach (var a in AppDomain.CurrentDomain.GetAssemblies().Where(a => ShouldLoad(a.FullName)))
-        {
-            loaded.TryAdd(a.FullName, true);
-        }
-
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => IsNotNetFramework(a.FullName)))
-            LoadReferencedAssembly(assembly);
-
-        _areAssembliesLoaded = true;
+        propertyInfo!.SetValue(instance, value,
+            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null, null, null);
     }
 }
-#pragma warning restore CS8604
 
 /// <summary>
 /// Provides a Fixture, AutoCustomization support and an Instance property.
@@ -282,34 +173,9 @@ public abstract class Tester<T> : Tester where T : class
     {
         _instance = new Lazy<T>(() =>
         {
-            var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? Array.Empty<ParameterInfo>();
+            var instance = InstanceProvider.Create<T>(Fixture, _overridenConstructorParameters, (IReadOnlyDictionary<Type, Mock>)_mocks);
 
-            var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
-
-            foreach (var i in interfaces.Where(x => !_mocks.ContainsKey(x)))
-                AddMock(i);
-
-            var specimenContext = new SpecimenContext(Fixture);
-
-            var instancedParameters = new List<object>();
-            foreach (var parameterInfo in parameters)
-            {
-                var overriden = _overridenConstructorParameters.SingleOrDefault(x => x.GetType().IsAssignableTo(parameterInfo.ParameterType));
-                if (overriden is not null)
-                {
-                    instancedParameters.Add(overriden);
-                }
-                else if (parameterInfo.ParameterType.IsAbstract)
-                {
-                    instancedParameters.Add(_mocks[parameterInfo.ParameterType].Object);
-                }
-                else
-                {
-                    instancedParameters.Add(specimenContext.Resolve(parameterInfo.ParameterType));
-                }
-            }
-
-            if (instancedParameters.OfType<IServiceProvider>().Any())
+            if (instance.InstancedParameters.OfType<IServiceProvider>().Any())
             {
                 if (!_autoInjects.Any())
                 {
@@ -370,10 +236,14 @@ public abstract class Tester<T> : Tester where T : class
                 }
             }
 
-            if (instancedParameters.Any()) _constructorParameters.AddRange(instancedParameters);
-            var instance = (Activator.CreateInstance(typeof(T), instancedParameters.ToArray()) as T)!;
-            AfterCreateInstance(instance);
-            return instance;
+            foreach (var mock in instance.Mocks)
+            {
+                if (_mocks.ContainsKey(mock.Key)) continue;
+                _mocks[mock.Key] = mock.Value;
+            }
+
+            AfterCreateInstance(instance.Value);
+            return instance.Value;
         });
     }
 
@@ -471,11 +341,25 @@ public abstract class Tester<T> : Tester where T : class
     protected void AddToServiceProvider(Type type)
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
-
         if (!_mocks.ContainsKey(typeof(IServiceProvider)))
             AddMock(typeof(IServiceProvider));
         if (!_mocks.ContainsKey(type))
             AddMock(type);
         GetMock<IServiceProvider>().Setup(x => x.GetService(type)).Returns(_mocks[type].Object);
+    }
+
+    /// <summary>
+    /// Adds a service of type <see cref="TService"/> to <see cref="IServiceProvider"/> with a specific (non-mocked) instance.
+    /// </summary>
+    protected void AddToServiceProvider<TService>(object instance) where TService : class => AddToServiceProvider(typeof(TService), instance);
+
+    /// <summary>
+    /// Adds a service of the specified type to <see cref="IServiceProvider"/> with a specific (non-mocked) instance.
+    /// </summary>
+    protected void AddToServiceProvider(Type type, object instance)
+    {
+        if (type == null) throw new ArgumentNullException(nameof(type));
+        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        GetMock<IServiceProvider>().Setup(x => x.GetService(type)).Returns(instance);
     }
 }

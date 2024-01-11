@@ -9,4 +9,15 @@ public static class MockUtils
             output.Add(new Mock<T>());
         return output;
     }
+
+    /// <summary>
+    /// Instantiates a generic Mock object of the specified type.
+    /// </summary>
+    public static Mock CreateFrom(Type type)
+    {
+        var typeArgs = new[] { type };
+        var mockType = typeof(Mock<>);
+        var constructed = mockType.MakeGenericType(typeArgs);
+        return (Activator.CreateInstance(constructed) as Mock)!;
+    }
 }

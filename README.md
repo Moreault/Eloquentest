@@ -3,6 +3,12 @@
 
 A simple to use .NET unit testing framework built on top of MSTest and Moq. It also includes built-in support for services that are injected using [AutoInject].
 
+:warning: Eloquentest is moving away from base `Tester` classes in version 3.0.0 and will instead rely on extension and utility methods to give you the tools to build 
+your own base `Tester` classes that can implement whichever framework that you like. The current implementation using Moq and AutoFixture will likely be part of an 
+`Eloquentest.Classic` package and may become deprecated in version 4.0.0. 
+
+Eloquentest will also be separated into multiple packages supporting different frameworks such as Moq , NSubstitute, AutoFixture, etc.
+
 ## Getting started
 
 Here is the dumbest service you can imagine.
@@ -213,7 +219,10 @@ The Eloquentest.Integration namespace (available on nuget.org as a separate pack
 
 IntegrationTester and IntegreationTester<T> replace Tester and Tester<T> and there are no mocks. 
 
-## Empty string cases
+## Ensure
+The `Ensure` class comes with common test case helpers that would otherwise require you to write a lot of boilerplate code.
+
+### WhenIsNullOrEmpty and WhenIsNullOrWhiteSpace
 You can test `string.IsNullOrEmpty` and `string.IsNullOrWhitespace` cases using the following methods.
 
 ```cs
@@ -265,6 +274,72 @@ public void WhenFilenameIsNullOrWhitespace_Throw(string filename)
     action.Should().Throw<ArgumentNullException>().WithParameterName(nameof(filename));
 });
 ```
+
+### ValueEquality
+You can test value equality using the following methods.
+
+* All methods named `Equals` that have a `bool` return type and a single parameter
+* All `==` operators
+* All `!=` operators
+
+```cs
+[TestMethod]
+public void EnsureValueEquality() => Ensure.ValueEquality<YourType>();
+```
+
+This method will automatically test all cases of equality and inequality for your type. Do note that it will not test equals methods that check equality with another unrelated type. You will still need to test those manually or use `Ensure.Equality` and `Ensure.Inequality`.
+
+### Equality
+Tests that two objects are equal using the `Equals` method, the `==` and `!=` operators. This method is more granular than `ValueEquality` and will only test equality between two specific objects using the aforementioned methods. This helps reduce unit test redundancy by not requiring you to write different tests for each method or equality operator.
+
+```cs
+[TestMethod]
+public void Always_EnsureEqualityBetweenEquivalentObjects() 
+{
+	//Arrange
+	var obj1 = Fixture.Create<YourType>();
+	var obj2 = obj1.Clone();
+
+	//Act
+	//Assert
+	Ensure.Equality(obj1, obj2);
+}
+```
+
+### Inequality
+Tests that two objects are _not_ equal using the `Equals` method, the `==` and `!=` operators. It does the same thing as `Equality` but for inequality.
+
+```cs
+[TestMethod]
+public void Always_EnsureInequalityBetweenDifferentObjects() 
+{
+	//Arrange
+	var obj1 = Fixture.Create<YourType>();
+	var obj2 = Fixture.Create<YourType>();
+
+	//Act
+	//Assert
+	Ensure.Inequality(obj1, obj2);
+}
+```
+
+### ConsistentHashCode
+Tests that two equivalent instances of the same type produce the same hash code and that two different instances of the same type produce different hash codes.
+
+```cs
+[TestMethod]
+public void EnsureConsistentHashCode() => Ensure.ConsistentHashCode<YourType>();
+```
+
+### Customizations
+Eloquentest comes with a few customizations and specimen builders for base .NET types that AutoFixture does not support by default such as :
+
+* System.Version
+* System.IFormatProvider
+* System.Collections.Immutable.ImmutableList<T>
+* System.Collections.Generic.Stack<T>
+
+As long as you use `Tester` as a base class for your tests, these customizations will be automatically applied to your `Fixture` instance.
 
 ### Setup
 It works right out of the box if you already use AutoInject in your regular code.
