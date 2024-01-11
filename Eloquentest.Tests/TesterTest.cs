@@ -1,4 +1,7 @@
-﻿namespace Eloquentest.Tests
+﻿using FluentAssertions;
+using ToolBX.Eloquentest;
+
+namespace Eloquentest.Tests
 {
     [TestClass]
     public class TesterTest : Tester<TesterTest.Dummy>
