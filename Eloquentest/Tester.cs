@@ -93,7 +93,9 @@ public abstract class Tester
         if (instance == null) throw new ArgumentNullException(nameof(instance));
         if (string.IsNullOrWhiteSpace(methodName)) throw new ArgumentNullException(nameof(methodName));
 
-        var methodInfo = instance.GetType().GetSingleMethod(methodName);
+        var methodInfo = parameters is null || !parameters.Any() ? 
+            instance.GetType().GetSingleMethod(methodName) : 
+            instance.GetType().GetSingleMethod(x => x.Name == methodName && x.HasParametersAssignableTo(parameters.Select(y => y?.GetType())));
         return methodInfo.Invoke(instance, parameters);
     }
 
