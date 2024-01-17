@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using ToolBX.Eloquentest;
+﻿using Moq;
 
 namespace Eloquentest.Tests
 {
@@ -33,6 +32,21 @@ namespace Eloquentest.Tests
             }
 
             public IService2 GetService2() => _service2;
+
+            private void Load()
+            {
+                throw new InvalidOperationException("Not the right one!");
+            }
+
+            private void Load(string name)
+            {
+                throw new InvalidOperationException("This is the right one! Or is it?");
+            }
+
+            private void Load(string name, IService1 service1)
+            {
+
+            }
         }
 
         [TestMethod]
@@ -47,6 +61,30 @@ namespace Eloquentest.Tests
 
             //Assert
             result.Should().BeSameAs(concrete);
+        }
+
+        [TestMethod]
+        public void InvokeMethod_WhenHasOverloads_InvokeTheOneWithTheSameParametersTypesPassed()
+        {
+            //Arrange
+
+            //Act
+            var action = () => InvokeMethod("Load", "name", new Mock<IService1>().Object);
+
+            //Assert
+            action.Should().NotThrow();
+        }
+
+        [TestMethod]
+        public void InvokeMethod_WhenHasOverloadsAndOneParameterNull_InvokeTheOneWithTheSameParametersTypesPassedWithoutThrowing()
+        {
+            //Arrange
+
+            //Act
+            var action = () => InvokeMethod("Load", "name", null!);
+
+            //Assert
+            action.Should().NotThrow();
         }
 
     }
