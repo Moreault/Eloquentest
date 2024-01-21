@@ -9,12 +9,11 @@ public abstract class AutoFillTester<T> : Tester<T> where T : class
     protected internal override void AfterCreateInstance(T instance)
     {
         base.AfterCreateInstance(instance);
-        var specimenContext = new SpecimenContext(Fixture);
         foreach (var property in instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty))
         {
             try
             {
-                property.SetValue(instance, specimenContext.Resolve(property.PropertyType));
+                property.SetValue(instance, Fixture.Create(property.PropertyType));
             }
             catch
             {

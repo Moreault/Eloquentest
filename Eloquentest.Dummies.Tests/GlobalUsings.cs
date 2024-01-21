@@ -1,0 +1,9 @@
+global using System.Reflection;
+global using Eloquentest.UnitTesting;
+global using Eloquentest.UnitTesting.Extensions;
+global using FluentAssertions;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using ToolBX.Dummies;
+global using ToolBX.Dummies.Customizations;
+global using ToolBX.Eloquentest;
+global using ToolBX.Eloquentest.Dummies;

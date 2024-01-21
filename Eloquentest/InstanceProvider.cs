@@ -27,9 +27,9 @@ public sealed record InstanceResult<T>
 
 public static class InstanceProvider
 {
-    public static InstanceResult<T> Create<T>(IFixture? fixture = null, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
+    public static InstanceResult<T> Create<T>(IObjectGenerator? fixture = null, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
     {
-        fixture ??= FixtureProvider.Create();
+        fixture ??= ObjectGeneratorProvider.Create();
         constructorParameterOverrides ??= Array.Empty<object>();
         overridenMocks ??= ImmutableDictionary<Type, Mock>.Empty;
         var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? Array.Empty<ParameterInfo>();
@@ -40,8 +40,6 @@ public static class InstanceProvider
 
         foreach (var type in interfaces.Where(x => !mocks.ContainsKey(x)))
             mocks[type] = MockUtils.CreateFrom(type);
-
-        var specimenContext = new SpecimenContext(fixture);
 
         var instancedParameters = new List<object>();
         foreach (var parameterInfo in parameters)
@@ -57,7 +55,7 @@ public static class InstanceProvider
             }
             else
             {
-                instancedParameters.Add(specimenContext.Resolve(parameterInfo.ParameterType));
+                instancedParameters.Add(fixture.Create(parameterInfo.ParameterType));
             }
         }
 

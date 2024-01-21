@@ -31,22 +31,22 @@ public static class Ensure
     /// <summary>
     /// Automatically tests all equality cases between two objects.
     /// </summary>
-    public static void ValueEquality<T>() => ValueEquality<T>(FixtureProvider.Create(), new JsonSerializerOptions());
+    public static void ValueEquality<T>() => ValueEquality<T>(ObjectGeneratorProvider.Create(), new JsonSerializerOptions());
 
     /// <summary>
     /// Automatically tests all equality cases between two objects.
     /// </summary>
-    public static void ValueEquality<T>(IFixture fixture) => ValueEquality<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
+    public static void ValueEquality<T>(IObjectGenerator fixture) => ValueEquality<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
 
     /// <summary>
     /// Automatically tests all equality cases between two objects.
     /// </summary>
-    public static void ValueEquality<T>(JsonSerializerOptions options) => ValueEquality<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
+    public static void ValueEquality<T>(JsonSerializerOptions options) => ValueEquality<T>(ObjectGeneratorProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
 
     /// <summary>
     /// Automatically tests all equality cases between two objects.
     /// </summary>
-    public static void ValueEquality<T>(IFixture fixture, JsonSerializerOptions options)
+    public static void ValueEquality<T>(IObjectGenerator fixture, JsonSerializerOptions options)
     {
         if (fixture is null) throw new ArgumentNullException(nameof(fixture));
         if (options is null) throw new ArgumentNullException(nameof(options));
@@ -210,11 +210,11 @@ public static class Ensure
         }
     }
 
-    private static void IsCloneable<T>(IFixture fixture, JsonSerializerOptions options)
+    private static void IsCloneable<T>(IObjectGenerator generator, JsonSerializerOptions options)
     {
         try
         {
-            var original = fixture.Create<T>();
+            var original = generator.Create<T>();
             var clone = original.Clone(options);
             Assert.IsTrue(original.ValueEquals(clone));
         }
@@ -257,27 +257,27 @@ public static class Ensure
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ValueHashCode<T>() => ValueHashCode<T>(FixtureProvider.Create(), new JsonSerializerOptions());
+    public static void ValueHashCode<T>() => ValueHashCode<T>(ObjectGeneratorProvider.Create(), new JsonSerializerOptions());
 
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ValueHashCode<T>(IFixture fixture) => ValueHashCode<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
+    public static void ValueHashCode<T>(IObjectGenerator generator) => ValueHashCode<T>(generator ?? throw new ArgumentNullException(nameof(generator)), new JsonSerializerOptions());
 
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ValueHashCode<T>(JsonSerializerOptions options) => ValueHashCode<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
+    public static void ValueHashCode<T>(JsonSerializerOptions options) => ValueHashCode<T>(ObjectGeneratorProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
 
     /// <summary>
     /// Automatically tests that two equivalent instances of the same type produce the same hash code and that two different objects do not.
     /// </summary>
-    public static void ValueHashCode<T>(IFixture fixture, JsonSerializerOptions options)
+    public static void ValueHashCode<T>(IObjectGenerator generator, JsonSerializerOptions options)
     {
-        if (fixture is null) throw new ArgumentNullException(nameof(fixture));
+        if (generator is null) throw new ArgumentNullException(nameof(generator));
         if (options is null) throw new ArgumentNullException(nameof(options));
 
-        IsCloneable<T>(fixture, options);
+        IsCloneable<T>(generator, options);
 
         T a = default!;
         T b = default!;
@@ -286,17 +286,17 @@ public static class Ensure
         try
         {
             testCase = "When A and B are different objects of the same type then they should not be equal";
-            a = fixture.Create<T>()!;
-            b = fixture.Create<T>()!;
+            a = generator.Create<T>()!;
+            b = generator.Create<T>()!;
             Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
 
             testCase = "When A and B are equivalent objects with different references then they should be equal";
-            a = fixture.Create<T>()!;
+            a = generator.Create<T>()!;
             b = a.Clone(options)!;
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
 
             testCase = "When A and B are the same reference then they should be equal";
-            a = fixture.Create<T>()!;
+            a = generator.Create<T>()!;
             b = a;
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
         }
@@ -315,22 +315,22 @@ public static class Ensure
     /// <summary>
     /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
     /// </summary>
-    public static void IsJsonSerializable<T>() => IsJsonSerializable<T>(FixtureProvider.Create(), new JsonSerializerOptions());
+    public static void IsJsonSerializable<T>() => IsJsonSerializable<T>(ObjectGeneratorProvider.Create(), new JsonSerializerOptions());
 
     /// <summary>
     /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
     /// </summary>
-    public static void IsJsonSerializable<T>(IFixture fixture) => IsJsonSerializable<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
+    public static void IsJsonSerializable<T>(IObjectGenerator fixture) => IsJsonSerializable<T>(fixture ?? throw new ArgumentNullException(nameof(fixture)), new JsonSerializerOptions());
 
     /// <summary>
     /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
     /// </summary>
-    public static void IsJsonSerializable<T>(JsonSerializerOptions options) => IsJsonSerializable<T>(FixtureProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
+    public static void IsJsonSerializable<T>(JsonSerializerOptions options) => IsJsonSerializable<T>(ObjectGeneratorProvider.Create(), options ?? throw new ArgumentNullException(nameof(options)));
 
     /// <summary>
     /// Tests that type can be serialized to JSON and back using Microsoft's System.Text.Json.
     /// </summary>
-    public static void IsJsonSerializable<T>(IFixture fixture, JsonSerializerOptions options)
+    public static void IsJsonSerializable<T>(IObjectGenerator fixture, JsonSerializerOptions options)
     {
         if (fixture is null) throw new ArgumentNullException(nameof(fixture));
         if (options is null) throw new ArgumentNullException(nameof(options));
@@ -344,9 +344,9 @@ public static class Ensure
     /// <summary>
     /// Tests that every property on <see cref="T"/> with public getter and setter accessors function as intended.
     /// </summary>
-    public static void HasBasicGetSetFunctionality<T>(IFixture? fixture = null)
+    public static void HasBasicGetSetFunctionality<T>(IObjectGenerator? fixture = null)
     {
-        fixture ??= FixtureProvider.Create();
+        fixture ??= ObjectGeneratorProvider.Create();
 
         var properties = typeof(T).GetAllProperties(x => x.IsGet() && x.IsSet() && x.IsPublic() && x.IsInstance());
 
@@ -362,12 +362,12 @@ public static class Ensure
     /// <summary>
     /// Tests that the specified property has basic get/set functionality.
     /// </summary>
-    public static void HasBasicGetSetFunctionality<T>(string propertyName) => HasBasicGetSetFunctionality<T>(FixtureProvider.Create(), propertyName);
+    public static void HasBasicGetSetFunctionality<T>(string propertyName) => HasBasicGetSetFunctionality<T>(ObjectGeneratorProvider.Create(), propertyName);
 
     /// <summary>
     /// Tests that the specified property has basic get/set functionality.
     /// </summary>
-    public static void HasBasicGetSetFunctionality<T>(IFixture fixture, string propertyName)
+    public static void HasBasicGetSetFunctionality<T>(IObjectGenerator fixture, string propertyName)
     {
         if (fixture is null) throw new ArgumentNullException(nameof(fixture));
         if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException(nameof(propertyName));
@@ -385,12 +385,12 @@ public static class Ensure
     /// <summary>
     /// Tests that a collection correctly enumerates.
     /// </summary>
-    public static void EnumeratesAllItems<TCollection, TItem>(IFixture? fixture = null) where TCollection : IEnumerable<TItem>
+    public static void EnumeratesAllItems<TCollection, TItem>(IObjectGenerator? fixture = null) where TCollection : IEnumerable<TItem>
     {
-        fixture ??= FixtureProvider.Create();
+        fixture ??= ObjectGeneratorProvider.Create();
 
         var instance = fixture.Create<TCollection>()!;
-        Assert.IsTrue(instance.Any());
+        Assert.IsTrue(instance.Any(), $"Collection of type '{typeof(TCollection).GetHumanReadableName()}' was created without items. It may require custom handling such as a Customization or a SpecimenBuilder (in AutoFixture).");
 
         var enumeratedItems = new List<TItem>();
         foreach (var item in instance)
