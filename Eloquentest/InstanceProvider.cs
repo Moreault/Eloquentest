@@ -27,12 +27,13 @@ public sealed record InstanceResult<T>
 
 public static class InstanceProvider
 {
+    //TODO overridenMocks should possibly be object and the MockProvider "converts" them to a mock wrapper of the correct type (Moq's or Poser's)
     public static InstanceResult<T> Create<T>(IObjectGenerator? fixture = null, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
     {
         fixture ??= ObjectGeneratorProvider.Create();
         constructorParameterOverrides ??= Array.Empty<object>();
         overridenMocks ??= ImmutableDictionary<Type, Mock>.Empty;
-        var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? Array.Empty<ParameterInfo>();
+        var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? [];
 
         var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
 

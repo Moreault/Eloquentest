@@ -148,8 +148,6 @@ public abstract class Tester
 /// </summary>
 public abstract class Tester<T> : Tester where T : class
 {
-    private List<Type> _autoInjects = new();
-
     private readonly IDictionary<Type, Mock> _mocks = new Dictionary<Type, Mock>();
 
     /// <summary>
@@ -176,67 +174,6 @@ public abstract class Tester<T> : Tester where T : class
         _instance = new Lazy<T>(() =>
         {
             var instance = InstanceProvider.Create<T>(Fixture, _overridenConstructorParameters, (IReadOnlyDictionary<Type, Mock>)_mocks);
-
-            if (instance.InstancedParameters.OfType<IServiceProvider>().Any())
-            {
-                if (!_autoInjects.Any())
-                {
-                    var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
-                        .Where(x => x.IsClass && !x.IsAbstract && x.GetCustomAttribute<AutoInjectAttribute>() != null)
-                        .Select(x =>
-                        {
-                            var attribute = x.GetCustomAttribute<AutoInjectAttribute>();
-                            if (attribute!.Interface != null)
-                                return attribute.Interface;
-
-                            var interfaces = x.GetInterfaces();
-                            if (interfaces.Length == 1) return interfaces.Single();
-                            var withSameName = interfaces.SingleOrDefault(y => y.Name == $"I{x.Name}");
-                            if (withSameName != null) return withSameName;
-
-                            var regex = new Regex(
-                                @"(?<=[A-Z])(?=[A-Z][a-z]) | (?<=[^A-Z])(?=[A-Z]) | (?<=[A-Za-z])(?=[^A-Za-z])",
-                                RegexOptions.IgnorePatternWhitespace);
-
-                            var splittedTypeName = regex.Replace(x.Name, " ").Split(' ');
-                            var searchResult = new List<InterfaceSearchResult>();
-
-                            var directInterfaces = x.GetDirectInterfaces();
-
-                            foreach (var i in interfaces)
-                            {
-                                var splittedInterfaceName = regex.Replace(i.Name, " ").Split(' ');
-                                var similarities = splittedInterfaceName.Sum(x => splittedTypeName.Count(y => x.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
-
-                                if (similarities > 0)
-                                    searchResult.Add(new InterfaceSearchResult
-                                    {
-                                        Interface = i,
-                                        Similarities = similarities,
-                                        IsInherited = !directInterfaces.Contains(i)
-                                    });
-                            }
-
-                            if (!searchResult.Any())
-                                throw new Exception($"Can't inject service automatically : {x.Name} implements {interfaces.Length} interfaces but none of them are close to similar in name.");
-                            searchResult = searchResult.OrderBy(y => y.IsInherited)
-                                .ThenByDescending(y => y.Similarities).ToList();
-                            if (searchResult.Count > 1 &&
-                                searchResult[0].Similarities == searchResult[1].Similarities &&
-                                searchResult[0].IsInherited == searchResult[1].IsInherited)
-                                throw new Exception($"Can't inject service automatically : {x.Name} there is ambiguity between {searchResult[0].Interface.Name} and {searchResult[1].Interface.Name}. Either change interface names or specify the interface to use.");
-
-                            return searchResult.First().Interface;
-                        });
-
-                    _autoInjects = types.ToList();
-                }
-
-                foreach (var type in _autoInjects)
-                {
-                    AddToServiceProvider(type);
-                }
-            }
 
             foreach (var mock in instance.Mocks)
             {
