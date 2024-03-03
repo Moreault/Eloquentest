@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using ToolBX.Eloquentest;
 
 namespace Eloquentest.AutoFixture.Tests.Customizations.SpecimenBuilders;
 

@@ -28,7 +28,7 @@ public sealed record InstanceResult<T>
 public static class InstanceProvider
 {
     //TODO overridenMocks should possibly be object and the MockProvider "converts" them to a mock wrapper of the correct type (Moq's or Poser's)
-    public static InstanceResult<T> Create<T>(IObjectGenerator? fixture = null, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
+    public static InstanceResult<T> Create<T>(ObjectGenerator? fixture = null, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
     {
         fixture ??= ObjectGeneratorProvider.Create();
         constructorParameterOverrides ??= Array.Empty<object>();

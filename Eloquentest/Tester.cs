@@ -23,7 +23,7 @@ public abstract class Tester
         set => InitializedClasses[GetType()] = value;
     }
 
-    protected IObjectGenerator Fixture { get; } = ObjectGeneratorProvider.Create();
+    protected ObjectGenerator Fixture { get; } = ObjectGeneratorProvider.Create();
 
     [ClassInitialize]
     public void ClassInitializeOnBaseClass()

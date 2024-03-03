@@ -1,6 +1,6 @@
 ﻿namespace ToolBX.Eloquentest.Dummies;
 
-public sealed class DummyWrapper : IObjectGenerator
+public sealed class DummyWrapper : ObjectGenerator
 {
     private readonly Dummy _unwrapped;
 
@@ -9,12 +9,17 @@ public sealed class DummyWrapper : IObjectGenerator
         _unwrapped = new Dummy();
     }
 
-    public T Create<T>() => _unwrapped.Create<T>();
+    public DummyWrapper(Dummy unwrapped)
+    {
+        _unwrapped = unwrapped ?? throw new ArgumentNullException(nameof(unwrapped));
+    }
 
-    public object Create(Type type) => _unwrapped.Create(type);
+    public override T Create<T>() => _unwrapped.Create<T>();
+
+    public override object Create(Type type) => _unwrapped.Create(type);
 
     //TODO _unwrapped.CreateMany<T>() is not implemented
-    public IEnumerable<T> CreateMany<T>()
+    public override IEnumerable<T> CreateMany<T>()
     {
         for (var i = 0; i < 3; i++)
         {

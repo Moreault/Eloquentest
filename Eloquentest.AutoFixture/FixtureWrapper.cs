@@ -1,6 +1,6 @@
 ﻿namespace ToolBX.Eloquentest.AutoFixture;
 
-public sealed class FixtureWrapper : IObjectGenerator
+public sealed class FixtureWrapper : ObjectGenerator
 {
     public static IReadOnlyList<object> AutoCustomizations => LazyAutoCustomizations.Value;
 
@@ -11,9 +11,14 @@ public sealed class FixtureWrapper : IObjectGenerator
 
     private readonly IFixture _unwrapped;
 
-    public FixtureWrapper()
+    public FixtureWrapper() : this(new Fixture())
     {
-        _unwrapped = new Fixture();
+ 
+    }
+
+    public FixtureWrapper(IFixture fixture)
+    {
+        _unwrapped = fixture;
         foreach (var autoCustomization in AutoCustomizations)
         {
             if (autoCustomization is ICustomization customization)
@@ -24,8 +29,11 @@ public sealed class FixtureWrapper : IObjectGenerator
         }
     }
 
-    public T Create<T>() => _unwrapped.Create<T>();
+    public override T Create<T>() => _unwrapped.Create<T>();
 
-    public object Create(Type type) => _unwrapped.Create(type);
-    public IEnumerable<T> CreateMany<T>() => _unwrapped.CreateMany<T>();
+    public override object Create(Type type) => _unwrapped.Create(type);
+    public override IEnumerable<T> CreateMany<T>() => _unwrapped.CreateMany<T>();
+
+    public static implicit operator Fixture(FixtureWrapper wrapper) => (Fixture)wrapper._unwrapped;
+    public static implicit operator FixtureWrapper(Fixture fixture) => new(fixture);
 }

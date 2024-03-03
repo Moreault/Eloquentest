@@ -1,12 +1,7 @@
 ﻿namespace Eloquentest.Dummies.Tests;
 
 [TestClass]
-public sealed class EnsureTests : EnsureTester
+public sealed class EnsureTests : EnsureTester<Ensure, Dummy>
 {
-    [TestInitialize]
-    public void Initialize()
-    {
-        //var anus = new DummyWrapper();
-    }
-
+    protected override ObjectGenerator Wrap(Dummy generator) => new DummyWrapper(generator);
 }

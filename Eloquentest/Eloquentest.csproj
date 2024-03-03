@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>3.0.0-beta0a</Version>
+		<Version>3.0.0-beta0f</Version>
 		<RootNamespace>ToolBX.$(AssemblyName)</RootNamespace>
 		<PackageId>ToolBX.$(AssemblyName)</PackageId>
 		<Product>ToolBX.$(AssemblyName)</Product>
@@ -34,7 +34,28 @@
 		<PackageReference Include="Moq" Version="4.20.70" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
 		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0" />
-		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="2.2.0" />
+		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="3.0.0-beta0a" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Resources\AssertionFailures.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>AssertionFailures.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\AssertionFailures.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>AssertionFailures.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>Eloquentest.UnitTesting</_Parameter1>
+		</AssemblyAttribute>
 	</ItemGroup>
 
 </Project>

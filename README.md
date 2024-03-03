@@ -1,13 +1,44 @@
 ![Eloquentest](https://github.com/Moreault/Eloquentest/blob/master/eloquentest.png)
 # Eloquentest
 
-A simple to use .NET unit testing framework built on top of MSTest and Moq. It also includes built-in support for services that are injected using [AutoInject].
+A simple to use .NET unit testing framework with multiple providers for object generation and mocking. These are currently supported as of version 3.0.0 beta :
+* Moq (only mock provider currently available)
+* AutoFixture
+* Dummies : Part of the ToolBX microframework. Similar to AutoFixture but newer and more lightweight.
 
-:warning: Eloquentest is moving away from base `Tester` classes in version 3.0.0 and will instead rely on extension and utility methods to give you the tools to build 
-your own base `Tester` classes that can implement whichever framework that you like. The current implementation using Moq and AutoFixture will likely be part of an 
-`Eloquentest.Classic` package and may become deprecated in version 4.0.0. 
+## Installation
 
-Eloquentest will also be separated into multiple packages supporting different frameworks such as Moq , NSubstitute, AutoFixture, etc.
+### AutoFixture
+Use the `Eloquentest.AutoFixture` package from nuget.org.
+
+As of 3.0.0 beta, requires an AssemblyInitializer :
+
+```c#
+[TestClass]
+public static class AssemblyInitializer
+{
+    [AssemblyInitialize]
+    public static void AssemblyInitialize(TestContext _) => AssemblyInitializerBase.Initialize("Eloquentest.AutoFixture");
+}
+```
+
+You can refer to the `Eloquentest.AutoFixture.Tests` source code in this repository for examples on how to use it.
+
+### Dummies
+Use the `Eloquentest.Dummies` package from nuget.org.
+
+As of 3.0.0 beta, requires an AssemblyInitializer :
+
+```c#
+[TestClass]
+public static class AssemblyInitializer
+{
+    [AssemblyInitialize]
+    public static void AssemblyInitialize(TestContext _) => AssemblyInitializerBase.Initialize("Eloquentest.Dummies");
+}
+```
+
+You can refer to the `Eloquentest.Dummies.Tests` source code in this repository for examples on how to use it.
 
 ## Getting started
 
@@ -220,14 +251,16 @@ The Eloquentest.Integration namespace (available on nuget.org as a separate pack
 IntegrationTester and IntegreationTester<T> replace Tester and Tester<T> and there are no mocks. 
 
 ## Ensure
-The `Ensure` class comes with common test case helpers that would otherwise require you to write a lot of boilerplate code.
+The `Ensure` class comes with common test case helpers that would otherwise require you to write a lot of boilerplate code. Eloquentest.Dummies and Eloquentest.AutoFixture each comes with its own implementation of `Ensure` based on `EnsureBase` from the base Eloquentest package. Only use `EnsureBase` directly if you want to create your own custom implementation (not recommended).
+
+Note that the following examples assume that you have an instance of `Ensure` initialized in your test class.
 
 ### WhenIsNullOrEmpty and WhenIsNullOrWhiteSpace
 You can test `string.IsNullOrEmpty` and `string.IsNullOrWhitespace` cases using the following methods.
 
 ```cs
 [TestMethod]
-public void WhenDirectoryIsNullOrEmpty_Throw() => WhenIsNullOrEmpty(directory =>
+public void WhenDirectoryIsNullOrEmpty_Throw() => Ensure.WhenIsNullOrEmpty(directory =>
 {
     //Arrange
 
@@ -241,7 +274,7 @@ public void WhenDirectoryIsNullOrEmpty_Throw() => WhenIsNullOrEmpty(directory =>
 
 ```cs
 [TestMethod]
-public void WhenFilenameIsNullOrWhitespace_Throw() => WhenIsNullOrWhiteSpace(filename =>
+public void WhenFilenameIsNullOrWhitespace_Throw() => Ensure.WhenIsNullOrWhiteSpace(filename =>
 {
     //Arrange
             
@@ -323,12 +356,12 @@ public void Always_EnsureInequalityBetweenDifferentObjects()
 }
 ```
 
-### ConsistentHashCode
+### ValueHashCode
 Tests that two equivalent instances of the same type produce the same hash code and that two different instances of the same type produce different hash codes.
 
 ```cs
 [TestMethod]
-public void EnsureConsistentHashCode() => Ensure.ConsistentHashCode<YourType>();
+public void EnsureValueHashCode() => Ensure.ValueHashCode<YourType>();
 ```
 
 ### Customizations

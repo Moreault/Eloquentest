@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using ToolBX.Eloquentest;
 using ToolBX.Eloquentest.AutoFixture;
 
 namespace Eloquentest.AutoFixture.Tests;
