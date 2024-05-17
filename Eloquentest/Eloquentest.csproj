@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>3.0.0-beta0g</Version>
+		<Version>3.0.0-beta0k</Version>
 		<RootNamespace>ToolBX.$(AssemblyName)</RootNamespace>
 		<PackageId>ToolBX.$(AssemblyName)</PackageId>
 		<Product>ToolBX.$(AssemblyName)</Product>
@@ -30,9 +30,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
 		<PackageReference Include="Moq" Version="4.20.70" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
 		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0" />
 		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="3.0.0-beta0a" />
 	</ItemGroup>

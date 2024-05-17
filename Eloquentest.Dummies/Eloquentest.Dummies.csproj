@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>3.0.0-beta0g</Version>
+		<Version>3.0.0-beta0k</Version>
 		<RootNamespace>ToolBX.$(AssemblyName)</RootNamespace>
 		<PackageId>ToolBX.$(AssemblyName)</PackageId>
 		<Product>ToolBX.$(AssemblyName)</Product>
@@ -17,7 +17,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ToolBX.Dummies" Version="2.9.9-beta1i" />
+		<PackageReference Include="ToolBX.Dummies" Version="2.9.9-beta1l" />
 	</ItemGroup>
 
 	<ItemGroup>
