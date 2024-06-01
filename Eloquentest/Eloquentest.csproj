@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>3.0.0-beta0n</Version>
+		<Version>3.0.0-beta0p</Version>
 		<RootNamespace>ToolBX.$(AssemblyName)</RootNamespace>
 		<PackageId>ToolBX.$(AssemblyName)</PackageId>
 		<Product>ToolBX.$(AssemblyName)</Product>
@@ -34,7 +34,7 @@
 		<PackageReference Include="Moq" Version="4.20.70" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
 		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0" />
-		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="3.0.0-beta0a" />
+		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="3.0.0-beta1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -55,6 +55,18 @@
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>Eloquentest.UnitTesting</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>Eloquentest.Dummies</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>Eloquentest.AutoFixture</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
 

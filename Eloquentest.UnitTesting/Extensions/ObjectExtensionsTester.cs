@@ -1,11 +1,14 @@
 ﻿using System.Collections;
+using ToolBX.Dummies;
 
 namespace Eloquentest.UnitTesting.Extensions;
 
 [TestClass]
-public abstract class ObjectExtensionsTester : Tester
+public abstract class ObjectExtensionsTester
 {
-    public record SimpleDummy
+    private Dummy _dummy = new();
+
+    public record SimpleGarbage
     {
         public int Id { get; init; }
         public string Name { get; init; } = string.Empty;
@@ -29,7 +32,7 @@ public abstract class ObjectExtensionsTester : Tester
     public void Clone_WhenDealingWithSimpleType_UseJsonSerializationToClone()
     {
         //Arrange
-        var instance = Fixture.Create<SimpleDummy>();
+        var instance = _dummy.Create<SimpleGarbage>();
 
         //Act
         var clone = instance.Clone();
@@ -62,7 +65,7 @@ public abstract class ObjectExtensionsTester : Tester
     public void Clone_WhenDealingWithUnserializableCollection_UseReflectionToClone()
     {
         //Arrange
-        var instance = new DummyCollection<SimpleDummy>(Fixture.CreateMany<SimpleDummy>().ToArray());
+        var instance = new DummyCollection<SimpleGarbage>(_dummy.CreateMany<SimpleGarbage>().ToArray());
 
         //Act
         var clone = instance.Clone();
@@ -75,9 +78,9 @@ public abstract class ObjectExtensionsTester : Tester
     public void Clone_WhenDealingWithComplexCollection_UseReflectionToClone()
     {
         //Arrange
-        var instance = new ComplexCollection<SimpleDummy>(Fixture.CreateMany<Cell<SimpleDummy>>().ToArray())
+        var instance = new ComplexCollection<SimpleGarbage>(_dummy.CreateMany<Cell<SimpleGarbage>>().ToArray())
         {
-            FetchCount = Fixture.Create<int>()
+            FetchCount = _dummy.Create<int>()
         };
 
         //Act

@@ -25,12 +25,10 @@ public sealed record InstanceResult<T>
     private readonly IReadOnlyList<object> _instancedParameters = null!;
 }
 
-public static class InstanceProvider
+internal static class InstanceProvider
 {
-    //TODO overridenMocks should possibly be object and the MockProvider "converts" them to a mock wrapper of the correct type (Moq's or Poser's)
-    public static InstanceResult<T> Create<T>(ObjectGenerator? fixture = null, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
+    internal static InstanceResult<T> Create<T>(Func<Type, object> createMethod, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
     {
-        fixture ??= ObjectGeneratorProvider.Create();
         constructorParameterOverrides ??= Array.Empty<object>();
         overridenMocks ??= ImmutableDictionary<Type, Mock>.Empty;
         var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? [];
@@ -56,7 +54,7 @@ public static class InstanceProvider
             }
             else
             {
-                instancedParameters.Add(fixture.Create(parameterInfo.ParameterType));
+                instancedParameters.Add(createMethod(parameterInfo.ParameterType));
             }
         }
 
@@ -69,5 +67,4 @@ public static class InstanceProvider
             InstancedParameters = instancedParameters
         };
     }
-
 }
