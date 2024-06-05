@@ -18,7 +18,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="ToolBX.Dummies" Version="3.0.0-beta2d" />
+		<PackageReference Include="ToolBX.Dummies" Version="3.0.0-beta2e" />
 	</ItemGroup>
 
 	<ItemGroup>

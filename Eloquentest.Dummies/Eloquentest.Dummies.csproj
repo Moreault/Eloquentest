@@ -17,7 +17,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ToolBX.Dummies" Version="3.0.0-beta2d" />
+		<PackageReference Include="ToolBX.Dummies" Version="3.0.0-beta2e" />
 	</ItemGroup>
 
 	<ItemGroup>
