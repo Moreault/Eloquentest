@@ -26,7 +26,7 @@ public static class ObjectExtensions
         try
         {
             var fields = typeof(T).GetAllFields(x => x.IsInstance());
-            var properties = typeof(T).GetAllProperties().Where(x => x.IsInstance() && x.IsSet());
+            var properties = typeof(T).GetAllProperties().Where(x => x.IsInstance() && x.CanWrite);
 
             var clone = Activator.CreateInstance<T>()!;
 

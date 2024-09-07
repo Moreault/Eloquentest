@@ -303,7 +303,7 @@ public abstract class EnsureBase<TGenerator>
     {
         fixture ??= ObjectGeneratorProvider.Create();
 
-        var properties = typeof(T).GetAllProperties(x => x.IsGet() && x.IsSet() && x.IsPublic() && x.IsInstance());
+        var properties = typeof(T).GetAllProperties(x => x.CanRead && x.CanWrite && x.IsPublic() && x.IsInstance());
 
         foreach (var property in properties)
         {
