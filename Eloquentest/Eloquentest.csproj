@@ -33,7 +33,7 @@
 		<PackageReference Include="AutoFixture" Version="4.18.1" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
 		<PackageReference Include="Moq" Version="4.20.70" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.5.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.6.0" />
 		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0" />
 		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="2.2.0" />
 	</ItemGroup>
