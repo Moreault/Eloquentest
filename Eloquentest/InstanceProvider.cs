@@ -25,14 +25,13 @@ public sealed record InstanceResult<T>
     private readonly IReadOnlyList<object> _instancedParameters = null!;
 }
 
-public static class InstanceProvider
+internal static class InstanceProvider
 {
-    public static InstanceResult<T> Create<T>(IFixture? fixture = null, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
+    internal static InstanceResult<T> Create<T>(Func<Type, object> createMethod, IEnumerable<object>? constructorParameterOverrides = null, IReadOnlyDictionary<Type, Mock>? overridenMocks = null!) where T : class
     {
-        fixture ??= FixtureProvider.Create();
         constructorParameterOverrides ??= Array.Empty<object>();
         overridenMocks ??= ImmutableDictionary<Type, Mock>.Empty;
-        var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? Array.Empty<ParameterInfo>();
+        var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? [];
 
         var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
 
@@ -40,8 +39,6 @@ public static class InstanceProvider
 
         foreach (var type in interfaces.Where(x => !mocks.ContainsKey(x)))
             mocks[type] = MockUtils.CreateFrom(type);
-
-        var specimenContext = new SpecimenContext(fixture);
 
         var instancedParameters = new List<object>();
         foreach (var parameterInfo in parameters)
@@ -57,7 +54,7 @@ public static class InstanceProvider
             }
             else
             {
-                instancedParameters.Add(specimenContext.Resolve(parameterInfo.ParameterType));
+                instancedParameters.Add(createMethod(parameterInfo.ParameterType));
             }
         }
 
@@ -70,5 +67,4 @@ public static class InstanceProvider
             InstancedParameters = instancedParameters
         };
     }
-
 }
