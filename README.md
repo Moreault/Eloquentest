@@ -1,42 +1,20 @@
 ![Eloquentest](https://github.com/Moreault/Eloquentest/blob/master/eloquentest.png)
 # Eloquentest
 
-A simple to use .NET unit testing framework with multiple providers for object generation and mocking. These are currently supported as of version 3.0.0 beta :
+A simple to use .NET unit testing framework with multiple providers for object generation and mocking. These are currently supported as of version 3.0.0 :
 * Moq (only mock provider currently available)
 * AutoFixture
-* Dummies : Part of the ToolBX microframework. Similar to AutoFixture but newer and more lightweight.
+* Dummies : Part of the ToolBX framework. Similar to AutoFixture but newer and more lightweight.
 
 ## Installation
 
 ### AutoFixture
 Use the `Eloquentest.AutoFixture` package from nuget.org.
 
-As of 3.0.0 beta, requires an AssemblyInitializer :
-
-```c#
-[TestClass]
-public static class AssemblyInitializer
-{
-    [AssemblyInitialize]
-    public static void AssemblyInitialize(TestContext _) => AssemblyInitializerBase.Initialize("Eloquentest.AutoFixture");
-}
-```
-
 You can refer to the `Eloquentest.AutoFixture.Tests` source code in this repository for examples on how to use it.
 
 ### Dummies
 Use the `Eloquentest.Dummies` package from nuget.org.
-
-As of 3.0.0 beta, requires an AssemblyInitializer :
-
-```c#
-[TestClass]
-public static class AssemblyInitializer
-{
-    [AssemblyInitialize]
-    public static void AssemblyInitialize(TestContext _) => AssemblyInitializerBase.Initialize("Eloquentest.Dummies");
-}
-```
 
 You can refer to the `Eloquentest.Dummies.Tests` source code in this repository for examples on how to use it.
 
@@ -384,3 +362,6 @@ GetRandom and GetRandomIndex methods have been removed from Eloquentest. Please 
 
 2.0.X -> 2.1.0
 `AutoFillTester<T>` was addded. There have been minor changes in when things are instantiated which may affect some users in `Tester` and `Tester<T>`.
+
+2.2.X -> 3.0.0
+All tester classes were removed. Use WhiteJackalStudio.TestTools from nuget.org to get `Tester` and `Tester<T>` but be warned that these use Dummies instead of AutoFixture.
