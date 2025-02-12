@@ -32,7 +32,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1" />
 		<PackageReference Include="Moq" Version="4.20.72" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.7.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.8.0" />
 		<PackageReference Include="ToolBX.AutoInject" Version="3.0.1" />
 		<PackageReference Include="ToolBX.Reflection4Humans.ValueEquality" Version="3.0.0" />
 	</ItemGroup>
