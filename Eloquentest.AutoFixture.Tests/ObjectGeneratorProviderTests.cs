@@ -1,8 +1,4 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using ToolBX.Eloquentest.AutoFixture;
-
-namespace Eloquentest.AutoFixture.Tests;
+﻿namespace Eloquentest.AutoFixture.Tests;
 
 [TestClass]
 public sealed class ObjectGeneratorProviderTests

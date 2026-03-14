@@ -38,7 +38,7 @@ public abstract class ObjectExtensionsTester
         var clone = instance.Clone();
 
         //Assert
-        instance.Should().BeEquivalentTo(clone);
+        instance.Should().Be(clone);
     }
 
     //Cannot be serialized by System.Text because it doesn't have a public set accessor on its indexer
