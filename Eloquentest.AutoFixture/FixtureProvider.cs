@@ -8,6 +8,4 @@ public sealed class FixtureProvider
         .OrderBy(x => x.GetCustomAttribute<AutoCustomizationAttribute>()!.Order)
         .Select(Activator.CreateInstance)
         .ToList()!);
-
-
 }

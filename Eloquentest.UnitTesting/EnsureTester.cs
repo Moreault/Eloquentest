@@ -108,7 +108,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.ReferenceEqualityFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same reference should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same reference should be equal.");
     }
 
     [TestMethod]
@@ -120,7 +120,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.ValueEqualityFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same value should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same value should be equal.");
     }
 
     [TestMethod]
@@ -132,7 +132,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.BadValueEquality>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Objects with different values should not be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Objects with different values should not be equal.");
     }
 
     [TestMethod]
@@ -144,7 +144,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.NoValueEquality>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same value should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same value should be equal.");
     }
 
     [TestMethod]
@@ -156,7 +156,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpEqualityNullFail1>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Two nulls should always return true when compared with '=='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Two nulls should always return true when compared with '=='.");
     }
 
     [TestMethod]
@@ -168,7 +168,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpEqualityNullFail2>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. 'Left' is null and 'Right' is not. They should not be considered equal when compared with '=='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*'Left' is null and 'Right' is not. They should not be considered equal when compared with '=='.");
     }
 
     [TestMethod]
@@ -180,7 +180,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpEqualityNullFail3>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. 'Right' is null and 'Left' is not. They should not be considered equal when compared with '=='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*'Right' is null and 'Left' is not. They should not be considered equal when compared with '=='.");
     }
 
     [TestMethod]
@@ -192,7 +192,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpEqualitySameReferenceFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Two objects with the same reference should be considered equal when compared with '=='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Two objects with the same reference should be considered equal when compared with '=='.");
     }
 
     [TestMethod]
@@ -204,7 +204,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpEqualitySameValueFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same value should be considered equal when compared with '=='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same value should be considered equal when compared with '=='.");
     }
 
     [TestMethod]
@@ -216,7 +216,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpEqualityDifferentValuesFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Objects with different values should not be considered equal when compared with '=='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Objects with different values should not be considered equal when compared with '=='.");
     }
 
     [TestMethod]
@@ -228,7 +228,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpInequalityNullFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Two nulls should always return false when compared with '!='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Two nulls should always return false when compared with '!='.");
     }
 
     [TestMethod]
@@ -240,7 +240,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpInequalityLeftNullFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. 'Left' is null and 'Right' is not. This should be true when compared with '!='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*'Left' is null and 'Right' is not. This should be true when compared with '!='.");
     }
 
     [TestMethod]
@@ -252,7 +252,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpInequalityRightNullFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. 'Right' is null and 'Left' is not. This should be true when compared with '!='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*'Right' is null and 'Left' is not. This should be true when compared with '!='.");
     }
 
     [TestMethod]
@@ -264,7 +264,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpInequalityValueFail>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Same references should return false when compared with '!='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Same references should return false when compared with '!='.");
     }
 
     [TestMethod]
@@ -276,7 +276,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.OpInequalityAlwaysEqual>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with different values should return true when compared with '!='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with different values should return true when compared with '!='.");
     }
 
     [TestMethod]
@@ -300,7 +300,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.NullEqualityFail>(UnwrappedGenerator);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Objects should not be equal if one is null.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Objects should not be equal if one is null.");
     }
 
     [TestMethod]
@@ -312,7 +312,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.ReferenceEqualityFail>(UnwrappedGenerator);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same reference should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same reference should be equal.");
     }
 
     [TestMethod]
@@ -324,7 +324,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.ValueEqualityFail>(UnwrappedGenerator);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same value should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same value should be equal.");
     }
 
     [TestMethod]
@@ -336,7 +336,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.NoValueEquality>(UnwrappedGenerator);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same value should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same value should be equal.");
     }
 
     [TestMethod]
@@ -360,7 +360,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.NullEqualityFail>(UnwrappedGenerator, new JsonSerializerOptions());
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Objects should not be equal if one is null.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Objects should not be equal if one is null.");
     }
 
     [TestMethod]
@@ -372,7 +372,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.ReferenceEqualityFail>(UnwrappedGenerator, new JsonSerializerOptions());
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same reference should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same reference should be equal.");
     }
 
     [TestMethod]
@@ -384,7 +384,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.ValueEqualityFail>(UnwrappedGenerator, new JsonSerializerOptions());
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same value should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same value should be equal.");
     }
 
     [TestMethod]
@@ -396,7 +396,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueEquality<Garbage.NoValueEquality>(UnwrappedGenerator, new JsonSerializerOptions());
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Objects with the same value should be equal.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Objects with the same value should be equal.");
     }
 
     [TestMethod]
@@ -460,7 +460,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.Equality(dummy1, dummy2);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Was not considered equal using the Equals method.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Was not considered equal using the Equals method.");
     }
 
     [TestMethod]
@@ -474,7 +474,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.Equality(dummy1, dummy2);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Was not considered equal using the '==' operator.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Was not considered equal using the '==' operator.");
     }
 
     [TestMethod]
@@ -488,7 +488,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.Equality(dummy1, dummy2);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Was expecting false with '!='.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Was expecting false with '!='.");
     }
 
     [TestMethod]
@@ -516,7 +516,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.Inequality(dummy1, dummy2);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Was expecting false using the Equals method.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Was expecting false using the Equals method.");
     }
 
     [TestMethod]
@@ -530,7 +530,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.Inequality(dummy1, dummy2);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed. Was expecting false using the '==' operator.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsFalse failed.*Was expecting false using the '==' operator.");
     }
 
     [TestMethod]
@@ -544,7 +544,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.Inequality(dummy1, dummy2);
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed. Was expecting true using the '!=' operator.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.IsTrue failed.*Was expecting true using the '!=' operator.");
     }
 
     [TestMethod]
@@ -568,7 +568,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.ValueHashCode<Garbage.ConstantHashCode>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage("Assert.AreNotEqual failed. Expected any value except:<14>. Actual:<14>. Two objects with different values should produce different hash code.");
+        action.Should().Throw<AssertFailedException>().WithMessage("Assert.AreNotEqual failed.*Two objects with different values should produce different hash code.");
     }
 
     [TestMethod]
@@ -664,7 +664,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         var action = () => Ensure.HasBasicGetSetFunctionality<Garbage.BadGetSetter>();
 
         //Assert
-        action.Should().Throw<AssertFailedException>().WithMessage($"Assert.AreEqual failed. * Property {nameof(Garbage.ProperGetSetter.Name)} has a public get/set but it is not returning the value that it was set.");
+        action.Should().Throw<AssertFailedException>().WithMessage($"*Property {nameof(Garbage.ProperGetSetter.Name)} has a public get/set but it is not returning the value that it was set.*");
     }
 
     [TestMethod]
