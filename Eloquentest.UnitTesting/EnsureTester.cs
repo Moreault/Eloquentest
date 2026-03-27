@@ -69,7 +69,7 @@ public abstract class EnsureTester<TEnsure, TGenerator> where TEnsure : EnsureBa
         Ensure.WhenIsNullOrWhiteSpace(action);
 
         //Assert
-        stringsUsed.Should().BeEquivalentTo(["", null!, " ", "\n", "\r", "\t"]);
+        stringsUsed.Should().BeEquivalentTo(["", null!, " ", "\n", "\r", "\t", "\r\n"]);
     }
 
     [TestMethod]

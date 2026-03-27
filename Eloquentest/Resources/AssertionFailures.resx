@@ -132,4 +132,40 @@
   <data name="DifferentValuesShouldNotBeEqual" xml:space="preserve">
 	  <value>Objects with different values should not be equal.</value>
   </data>
+  <data name="OpEqualityBothNullShouldBeTrue" xml:space="preserve">
+    <value>Two nulls should always return true when compared with '=='.</value>
+  </data>
+  <data name="OpEqualityLeftNullShouldBeFalse" xml:space="preserve">
+    <value>'Left' is null and 'Right' is not. They should not be considered equal when compared with '=='.</value>
+  </data>
+  <data name="OpEqualityRightNullShouldBeFalse" xml:space="preserve">
+    <value>'Right' is null and 'Left' is not. They should not be considered equal when compared with '=='.</value>
+  </data>
+  <data name="OpEqualitySameReferenceShouldBeTrue" xml:space="preserve">
+    <value>Two objects with the same reference should be considered equal when compared with '=='.</value>
+  </data>
+  <data name="OpEqualitySameValueShouldBeTrue" xml:space="preserve">
+    <value>Objects with the same value should be considered equal when compared with '=='.</value>
+  </data>
+  <data name="OpEqualityDifferentValuesShouldBeFalse" xml:space="preserve">
+    <value>Objects with different values should not be considered equal when compared with '=='.</value>
+  </data>
+  <data name="OpInequalityBothNullShouldBeFalse" xml:space="preserve">
+    <value>Two nulls should always return false when compared with '!='.</value>
+  </data>
+  <data name="OpInequalityLeftNullShouldBeTrue" xml:space="preserve">
+    <value>'Left' is null and 'Right' is not. This should be true when compared with '!='.</value>
+  </data>
+  <data name="OpInequalityRightNullShouldBeTrue" xml:space="preserve">
+    <value>'Right' is null and 'Left' is not. This should be true when compared with '!='.</value>
+  </data>
+  <data name="OpInequalitySameReferenceShouldBeFalse" xml:space="preserve">
+    <value>Same references should return false when compared with '!='.</value>
+  </data>
+  <data name="OpInequalitySameValueShouldBeFalse" xml:space="preserve">
+    <value>Objects with the same value should return false when compared with '!='.</value>
+  </data>
+  <data name="OpInequalityDifferentValuesShouldBeTrue" xml:space="preserve">
+    <value>Objects with different values should return true when compared with '!='.</value>
+  </data>
 </root>

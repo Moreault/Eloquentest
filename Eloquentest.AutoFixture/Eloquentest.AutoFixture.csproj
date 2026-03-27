@@ -13,7 +13,7 @@
 		<RepositoryUrl>https://github.com/Moreault/Eloquentest.AutoFixture</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Moreault/Eloquentest.AutoFixture</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Description></Description>
+		<Description>AutoFixture provider for the Eloquentest unit testing framework.</Description>
 		<PackageIcon>eloquentest.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>

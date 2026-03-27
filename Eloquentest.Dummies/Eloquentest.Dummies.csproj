@@ -13,7 +13,7 @@
 		<RepositoryUrl>https://github.com/Moreault/Eloquentest.Dummies</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Moreault/Eloquentest.Dummies</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Description></Description>
+		<Description>ToolBX.Dummies provider for the Eloquentest unit testing framework.</Description>
 		<PackageIcon>eloquentest.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>

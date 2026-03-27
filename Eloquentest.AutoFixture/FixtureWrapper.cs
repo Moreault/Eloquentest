@@ -2,24 +2,16 @@
 
 public sealed class FixtureWrapper : ObjectGenerator
 {
-    public static IReadOnlyList<object> AutoCustomizations => LazyAutoCustomizations.Value;
-
-    private static readonly Lazy<IReadOnlyList<object>> LazyAutoCustomizations = new(() => Types.Where(x => x.HasAttribute<AutoCustomizationAttribute>())
-        .OrderBy(x => x.GetCustomAttribute<AutoCustomizationAttribute>()!.Order)
-        .Select(Activator.CreateInstance)
-        .ToList()!);
-
     private readonly IFixture _unwrapped;
 
     public FixtureWrapper() : this(new Fixture())
     {
- 
     }
 
     public FixtureWrapper(IFixture fixture)
     {
         _unwrapped = fixture;
-        foreach (var autoCustomization in AutoCustomizations)
+        foreach (var autoCustomization in FixtureProvider.AutoCustomizations)
         {
             if (autoCustomization is ICustomization customization)
                 _unwrapped.Customize(customization);
@@ -33,6 +25,7 @@ public sealed class FixtureWrapper : ObjectGenerator
 
     public override object Create(Type type) => _unwrapped.Create(type);
     public override IEnumerable<T> CreateMany<T>() => _unwrapped.CreateMany<T>();
+    public override IEnumerable<T> CreateMany<T>(int count) => _unwrapped.CreateMany<T>(count);
 
     public static implicit operator Fixture(FixtureWrapper wrapper) => (Fixture)wrapper._unwrapped;
     public static implicit operator FixtureWrapper(Fixture fixture) => new(fixture);

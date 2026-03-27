@@ -15,7 +15,7 @@ public static class ObjectExtensions
             var json = JsonSerializer.Serialize(source, options);
             return JsonSerializer.Deserialize<T>(json, options) ?? throw new Exception($"Couldn't deserialize {source}");
         }
-        catch
+        catch (Exception e) when (e is JsonException or NotSupportedException or InvalidOperationException)
         {
             return source.ReflectionClone();
         }
