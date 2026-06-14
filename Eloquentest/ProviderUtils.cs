@@ -5,7 +5,7 @@ internal static class ProviderUtils
     internal static T CreateInstance<T>(string assemblyName, string typeName)
     {
         var assembly = AppDomain.CurrentDomain.GetAssemblies()
-            .FirstOrDefault(a => a.GetName().Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(a => string.Equals(a.GetName().Name, assemblyName, StringComparison.OrdinalIgnoreCase));
 
         if (assembly == null)
         {
@@ -25,7 +25,7 @@ internal static class ProviderUtils
     {
         var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         return loadedAssemblies.Any(assembly =>
-            assembly.GetName().Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
+            string.Equals(assembly.GetName().Name, assemblyName, StringComparison.OrdinalIgnoreCase));
     }
 
 }
