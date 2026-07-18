@@ -10,8 +10,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-		<PackageReference Include="ToolBX.AutoInject" Version="2.2.0" />
-		<PackageReference Include="ToolBX.NetAbstractions" Version="2.2.0" />
+		<PackageReference Include="ToolBX.AutoInject" Version="4.0.0" />
+		<PackageReference Include="ToolBX.NetAbstractions" Version="4.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
