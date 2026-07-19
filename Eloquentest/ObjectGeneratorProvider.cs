@@ -2,7 +2,11 @@
 
 public static class ObjectGeneratorProvider
 {
-    public static ObjectGenerator Create()
+    private static readonly Lazy<ObjectGenerator> CachedGenerator = new(ResolveGenerator);
+
+    public static ObjectGenerator Create() => CachedGenerator.Value;
+
+    private static ObjectGenerator ResolveGenerator()
     {
         if (ProviderUtils.IsAssemblyLoaded("Eloquentest.AutoFixture"))
         {

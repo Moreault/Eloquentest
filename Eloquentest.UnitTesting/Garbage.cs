@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using ToolBX.Reflection4Humans.ValueEquality;
 
@@ -219,9 +218,8 @@ public static class Garbage
 
         public static bool operator ==(OpEqualitySameValueFail? a, OpEqualitySameValueFail? b)
         {
-            if (a is null && b is null) return true;
-            if (a is null && b is not null) return false;
-            if (a is not null && b is null) return false;
+            if (a is null) return b is null;
+            if (b is null) return false;
             if (ReferenceEquals(a, b)) return true;
             return a.Id != b.Id && a.Name != b.Name;
         }
@@ -271,8 +269,7 @@ public static class Garbage
 
         public static bool operator ==(OpInequalityNullFail? a, OpInequalityNullFail? b)
         {
-            if (a is null && b is null) return true;
-            if (a is null && b is not null) return false;
+            if (a is null) return b is null;
             return a.Equals(b);
         }
 
@@ -299,8 +296,7 @@ public static class Garbage
 
         public static bool operator ==(OpInequalityLeftNullFail? a, OpInequalityLeftNullFail? b)
         {
-            if (a is null && b is null) return true;
-            if (a is null && b is not null) return false;
+            if (a is null) return b is null;
             return a.Equals(b);
         }
 
@@ -329,8 +325,7 @@ public static class Garbage
 
         public static bool operator ==(OpInequalityRightNullFail? a, OpInequalityRightNullFail? b)
         {
-            if (a is null && b is null) return true;
-            if (a is null && b is not null) return false;
+            if (a is null) return b is null;
             return a.Equals(b);
         }
 
@@ -360,16 +355,14 @@ public static class Garbage
 
         public static bool operator ==(OpInequalityValueFail? a, OpInequalityValueFail? b)
         {
-            if (a is null && b is null) return true;
-            if (a is null && b is not null) return false;
+            if (a is null) return b is null;
             return a.Equals(b);
         }
 
         public static bool operator !=(OpInequalityValueFail? a, OpInequalityValueFail? b)
         {
-            if (a is null && b is null) return false;
-            if (a is null && b is not null) return true;
-            if (b is null && a is not null) return true;
+            if (a is null) return b is not null;
+            if (b is null) return true;
             return a.Id == b.Id && a.Name == b.Name;
         }
     }
@@ -390,8 +383,7 @@ public static class Garbage
 
         public static bool operator ==(OpInequalityAlwaysEqual? a, OpInequalityAlwaysEqual? b)
         {
-            if (a is null && b is null) return true;
-            if (a is null && b is not null) return false;
+            if (a is null) return b is null;
             return a.Equals(b);
         }
 
@@ -583,7 +575,7 @@ public static class Garbage
 
             public T Current => _items[_index];
 
-            object IEnumerator.Current => Current;
+            object IEnumerator.Current => Current!;
 
             public bool MoveNext()
             {

@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>3.0.0</Version>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<Version>4.0.0</Version>
 		<RootNamespace>ToolBX.$(AssemblyName)</RootNamespace>
 		<PackageId>ToolBX.$(AssemblyName)</PackageId>
 		<Product>ToolBX.$(AssemblyName)</Product>
@@ -13,7 +14,7 @@
 		<RepositoryUrl>https://github.com/Moreault/Eloquentest.Dummies</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Moreault/Eloquentest.Dummies</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Description></Description>
+		<Description>ToolBX.Dummies provider for the Eloquentest unit testing framework.</Description>
 		<PackageIcon>eloquentest.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
@@ -30,7 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ToolBX.Dummies" Version="3.0.0" />
+		<PackageReference Include="ToolBX.Dummies" Version="4.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

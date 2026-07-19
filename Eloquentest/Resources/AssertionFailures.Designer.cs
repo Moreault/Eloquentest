@@ -19,7 +19,7 @@ namespace ToolBX.Eloquentest.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class AssertionFailures {
@@ -61,7 +61,7 @@ namespace ToolBX.Eloquentest.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Objects with different values should not be equal..
         /// </summary>
         internal static string DifferentValuesShouldNotBeEqual {
             get {
@@ -102,6 +102,78 @@ namespace ToolBX.Eloquentest.Resources {
         internal static string ShouldNeverHappen {
             get {
                 return ResourceManager.GetString("ShouldNeverHappen", resourceCulture);
+            }
+        }
+
+        internal static string OpEqualityBothNullShouldBeTrue {
+            get {
+                return ResourceManager.GetString("OpEqualityBothNullShouldBeTrue", resourceCulture);
+            }
+        }
+
+        internal static string OpEqualityLeftNullShouldBeFalse {
+            get {
+                return ResourceManager.GetString("OpEqualityLeftNullShouldBeFalse", resourceCulture);
+            }
+        }
+
+        internal static string OpEqualityRightNullShouldBeFalse {
+            get {
+                return ResourceManager.GetString("OpEqualityRightNullShouldBeFalse", resourceCulture);
+            }
+        }
+
+        internal static string OpEqualitySameReferenceShouldBeTrue {
+            get {
+                return ResourceManager.GetString("OpEqualitySameReferenceShouldBeTrue", resourceCulture);
+            }
+        }
+
+        internal static string OpEqualitySameValueShouldBeTrue {
+            get {
+                return ResourceManager.GetString("OpEqualitySameValueShouldBeTrue", resourceCulture);
+            }
+        }
+
+        internal static string OpEqualityDifferentValuesShouldBeFalse {
+            get {
+                return ResourceManager.GetString("OpEqualityDifferentValuesShouldBeFalse", resourceCulture);
+            }
+        }
+
+        internal static string OpInequalityBothNullShouldBeFalse {
+            get {
+                return ResourceManager.GetString("OpInequalityBothNullShouldBeFalse", resourceCulture);
+            }
+        }
+
+        internal static string OpInequalityLeftNullShouldBeTrue {
+            get {
+                return ResourceManager.GetString("OpInequalityLeftNullShouldBeTrue", resourceCulture);
+            }
+        }
+
+        internal static string OpInequalityRightNullShouldBeTrue {
+            get {
+                return ResourceManager.GetString("OpInequalityRightNullShouldBeTrue", resourceCulture);
+            }
+        }
+
+        internal static string OpInequalitySameReferenceShouldBeFalse {
+            get {
+                return ResourceManager.GetString("OpInequalitySameReferenceShouldBeFalse", resourceCulture);
+            }
+        }
+
+        internal static string OpInequalitySameValueShouldBeFalse {
+            get {
+                return ResourceManager.GetString("OpInequalitySameValueShouldBeFalse", resourceCulture);
+            }
+        }
+
+        internal static string OpInequalityDifferentValuesShouldBeTrue {
+            get {
+                return ResourceManager.GetString("OpInequalityDifferentValuesShouldBeTrue", resourceCulture);
             }
         }
     }

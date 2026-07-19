@@ -20,13 +20,33 @@ public abstract class EnsureBase<TGenerator>
     }
 
     /// <summary>
+    /// Automatically tests your method with null or empty strings.
+    /// </summary>
+    public async Task WhenIsNullOrEmptyAsync(Func<string, Task> action)
+    {
+        if (action is null) throw new ArgumentNullException(nameof(action));
+        foreach (var datarow in new[] { "", null! })
+            await action.Invoke(datarow);
+    }
+
+    /// <summary>
     /// Automatically tests your method with null, empty and white space strings.
     /// </summary>
     public void WhenIsNullOrWhiteSpace(Action<string> action)
     {
         if (action is null) throw new ArgumentNullException(nameof(action));
-        foreach (var datarow in new[] { "", null!, " ", "\n", "\r", "\t" })
+        foreach (var datarow in new[] { "", null!, " ", "\n", "\r", "\t", "\r\n" })
             action.Invoke(datarow);
+    }
+
+    /// <summary>
+    /// Automatically tests your method with null, empty and white space strings.
+    /// </summary>
+    public async Task WhenIsNullOrWhiteSpaceAsync(Func<string, Task> action)
+    {
+        if (action is null) throw new ArgumentNullException(nameof(action));
+        foreach (var datarow in new[] { "", null!, " ", "\n", "\r", "\t", "\r\n" })
+            await action.Invoke(datarow);
     }
 
     /// <summary>
@@ -99,28 +119,28 @@ public abstract class EnsureBase<TGenerator>
             {
                 a = default!;
                 b = default!;
-                Assert.IsTrue((bool)method.Invoke(null, [a, b])!, "Two nulls should always return true when compared with '=='.");
+                Assert.IsTrue((bool)method.Invoke(null, [a, b])!, AssertionFailures.OpEqualityBothNullShouldBeTrue);
 
                 a = default!;
                 b = generator.Create<T>();
-                Assert.IsFalse((bool)method.Invoke(null, [a, b!])!, "'Left' is null and 'Right' is not. They should not be considered equal when compared with '=='.");
+                Assert.IsFalse((bool)method.Invoke(null, [a, b!])!, AssertionFailures.OpEqualityLeftNullShouldBeFalse);
 
                 a = generator.Create<T>();
                 b = default!;
-                Assert.IsFalse((bool)method.Invoke(null, [a!, b])!, "'Right' is null and 'Left' is not. They should not be considered equal when compared with '=='.");
+                Assert.IsFalse((bool)method.Invoke(null, [a!, b])!, AssertionFailures.OpEqualityRightNullShouldBeFalse);
             }
 
             a = generator.Create<T>();
             b = a;
-            Assert.IsTrue((bool)method.Invoke(null, [a!, b!])!, "Two objects with the same reference should be considered equal when compared with '=='.");
+            Assert.IsTrue((bool)method.Invoke(null, [a!, b!])!, AssertionFailures.OpEqualitySameReferenceShouldBeTrue);
 
             a = generator.Create<T>();
             b = a.Clone(options);
-            Assert.IsTrue((bool)method.Invoke(null, [a!, b!])!, "Objects with the same value should be considered equal when compared with '=='.");
+            Assert.IsTrue((bool)method.Invoke(null, [a!, b!])!, AssertionFailures.OpEqualitySameValueShouldBeTrue);
 
             a = generator.Create<T>();
             b = generator.Create<T>();
-            Assert.IsFalse((bool)method.Invoke(null, [a!, b!])!, "Objects with different values should not be considered equal when compared with '=='.");
+            Assert.IsFalse((bool)method.Invoke(null, [a!, b!])!, AssertionFailures.OpEqualityDifferentValuesShouldBeFalse);
         }
 
         // Test using !=
@@ -135,28 +155,28 @@ public abstract class EnsureBase<TGenerator>
             {
                 a = default!;
                 b = default!;
-                Assert.IsFalse((bool)method.Invoke(null, [a, b])!, "Two nulls should always return false when compared with '!='.");
+                Assert.IsFalse((bool)method.Invoke(null, [a, b])!, AssertionFailures.OpInequalityBothNullShouldBeFalse);
 
                 a = default!;
                 b = generator.Create<T>();
-                Assert.IsTrue((bool)method.Invoke(null, [a, b!])!, "'Left' is null and 'Right' is not. This should be true when compared with '!='.");
+                Assert.IsTrue((bool)method.Invoke(null, [a, b!])!, AssertionFailures.OpInequalityLeftNullShouldBeTrue);
 
                 a = generator.Create<T>();
                 b = default!;
-                Assert.IsTrue((bool)method.Invoke(null, [a!, b])!, "'Right' is null and 'Left' is not. This should be true when compared with '!='.");
+                Assert.IsTrue((bool)method.Invoke(null, [a!, b])!, AssertionFailures.OpInequalityRightNullShouldBeTrue);
             }
 
             a = generator.Create<T>();
             b = a;
-            Assert.IsFalse((bool)method.Invoke(null, [a!, b!])!, "Same references should return false when compared with '!='.");
+            Assert.IsFalse((bool)method.Invoke(null, [a!, b!])!, AssertionFailures.OpInequalitySameReferenceShouldBeFalse);
 
             a = generator.Create<T>();
             b = a.Clone(options);
-            Assert.IsFalse((bool)method.Invoke(null, [a!, b!])!, "Objects with the same value should return false when compared with '!='.");
+            Assert.IsFalse((bool)method.Invoke(null, [a!, b!])!, AssertionFailures.OpInequalitySameValueShouldBeFalse);
 
             a = generator.Create<T>();
             b = generator.Create<T>();
-            Assert.IsTrue((bool)method.Invoke(null, [a!, b!])!, "Objects with different values should return true when compared with '!='.");
+            Assert.IsTrue((bool)method.Invoke(null, [a!, b!])!, AssertionFailures.OpInequalityDifferentValuesShouldBeTrue);
         }
     }
 
@@ -249,6 +269,34 @@ public abstract class EnsureBase<TGenerator>
         a = generator.Create<T>()!;
         b = a;
         Assert.AreEqual(a.GetHashCode(), b.GetHashCode(), "Two objects with the same reference should produce the same hash code.");
+    }
+
+    /// <summary>
+    /// Automatically tests both value equality and hash code consistency for a type.
+    /// </summary>
+    public void ValueEqualityAndHashCode<T>()
+    {
+        ValueEquality<T>();
+        ValueHashCode<T>();
+    }
+
+    /// <summary>
+    /// Automatically tests both value equality and hash code consistency for a type.
+    /// </summary>
+    public void ValueEqualityAndHashCode<T>(TGenerator generator)
+    {
+        var options = new JsonSerializerOptions();
+        ValueEquality<T>(generator, options);
+        ValueHashCode<T>(generator, options);
+    }
+
+    /// <summary>
+    /// Automatically tests both value equality and hash code consistency for a type.
+    /// </summary>
+    public void ValueEqualityAndHashCode<T>(TGenerator generator, JsonSerializerOptions options)
+    {
+        ValueEquality<T>(generator, options);
+        ValueHashCode<T>(generator, options);
     }
 
     /// <summary>
@@ -353,5 +401,18 @@ public abstract class EnsureBase<TGenerator>
         if (times < 1) throw new ArgumentOutOfRangeException(nameof(times));
         for (var i = 0; i < times; i++)
             action.Invoke();
+    }
+
+    /// <summary>
+    /// Tests an async method multiple times. Useful for testing flaky test methods.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public async Task SucceedsMultipleTimesAsync(Func<Task> action, int times = 3)
+    {
+        if (action is null) throw new ArgumentNullException(nameof(action));
+        if (times < 1) throw new ArgumentOutOfRangeException(nameof(times));
+        for (var i = 0; i < times; i++)
+            await action.Invoke();
     }
 }

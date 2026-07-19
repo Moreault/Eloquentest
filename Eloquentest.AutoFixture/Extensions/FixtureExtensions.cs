@@ -29,7 +29,7 @@ public static class FixtureExtensions
         var paths = new List<string>();
         for (var i = 0; i < count; i++)
         {
-            var path = string.Join(Path.AltDirectorySeparatorChar.ToString(), fixture.CreateMany<string>());
+            var path = string.Join(Path.AltDirectorySeparatorChar.ToString(), fixture.CreateMany<string>(directoryCount));
             paths.Add(path);
         }
         return paths;
@@ -47,7 +47,7 @@ public static class FixtureExtensions
         var paths = new List<string>();
         for (var i = 0; i < count; i++)
         {
-            var path = $"{string.Join(Path.AltDirectorySeparatorChar.ToString(), fixture.CreateMany<string>())}{Path.AltDirectorySeparatorChar}{fixture.Create<string>()}.{fixture.CreateFileExtension()}";
+            var path = $"{string.Join(Path.AltDirectorySeparatorChar.ToString(), fixture.CreateMany<string>(directoryCount))}{Path.AltDirectorySeparatorChar}{fixture.Create<string>()}.{fixture.CreateFileExtension()}";
             paths.Add(path);
         }
         return paths;
@@ -115,7 +115,7 @@ public static class FixtureExtensions
         return fixture.Create<Generator<T>>().Where(x => x.CompareTo(value) >= 0).Distinct().Take(count);
     }
 
-    public static T CreateBetween<T>(this IFixture fixture, T minValue, T maxValue, int count = int.MinValue) where T : INumber<T>
+    public static T CreateBetween<T>(this IFixture fixture, T minValue, T maxValue) where T : INumber<T>
     {
         return fixture.CreateManyBetween(minValue, maxValue).First();
     }
@@ -126,8 +126,7 @@ public static class FixtureExtensions
         var output = new List<T>();
         for (var i = 0; i < count; i++)
             output.Add(PseudoRandom.Next(minValue, maxValue));
-
-        return fixture.Create<Generator<T>>().Where(x => x.CompareTo(minValue) >= 0 && x.CompareTo(maxValue) <= 0).Distinct().Take(count);
+        return output;
     }
 
     public static IEnumerable<int> CreateManyNonDivisibleBy(this IFixture fixture, int value, int count = int.MinValue)
@@ -141,9 +140,9 @@ public static class FixtureExtensions
 
     public static int CreateNonDivisibleBy(this IFixture fixture, int value)
     {
+        if (value is 1 or -1) throw new ArgumentException("Every integer is divisible by 1.", nameof(value));
         var number = fixture.Create<int>();
-        var isDivisibleBy = number % value == 0;
-        return isDivisibleBy ? number : number + 1;
+        return number % value == 0 ? number + 1 : number;
     }
 
     public static int CreateDivisbleBy(this IFixture fixture, int value) => fixture.Create<int>() * value;
@@ -171,26 +170,4 @@ public static class FixtureExtensions
         var generic = method.MakeGenericMethod(type);
         return generic.Invoke(null, new object?[] { fixture })!;
     }
-}
-
-//TODO Put in Mathemancy.Randomness?
-public static class PseudoRandom
-{
-    private static Random _random = new();
-
-    public static int Seed
-    {
-        set => _random = new Random(value);
-    }
-
-    public static T Next<T>(T max) where T : INumber<T> => Next(T.Zero, max);
-
-    public static T Next<T>(T min, T max) where T : INumber<T> => T.CreateChecked(_random.NextInt64(Convert.ToInt64(min), Convert.ToInt64(max)));
-
-    /// <summary>
-    /// Returns a random number between 0.0 and 1.0
-    /// </summary>
-    public static T NextFloating<T>() where T : IFloatingPoint<T> => T.CreateChecked(_random.NextDouble());
-
-    public static T Next<T>() where T : INumber<T>, IMinMaxValue<T> => T.CreateChecked(_random.NextInt64(Convert.ToInt64(T.MinValue), Convert.ToInt64(T.MaxValue)));
 }

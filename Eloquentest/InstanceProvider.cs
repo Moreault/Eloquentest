@@ -33,11 +33,11 @@ internal static class InstanceProvider
         overridenMocks ??= ImmutableDictionary<Type, Mock>.Empty;
         var parameters = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance).MinBy(x => x.GetParameters().Length)?.GetParameters() ?? [];
 
-        var interfaces = parameters.Where(x => x.ParameterType.IsInterface).Select(x => x.ParameterType).ToList();
+        var mockableTypes = parameters.Where(x => x.ParameterType.IsInterface || x.ParameterType.IsAbstract).Select(x => x.ParameterType).ToList();
 
         var mocks = overridenMocks.ToDictionary(x => x.Key, x => x.Value);
 
-        foreach (var type in interfaces.Where(x => !mocks.ContainsKey(x)))
+        foreach (var type in mockableTypes.Where(x => !mocks.ContainsKey(x)))
             mocks[type] = MockUtils.CreateFrom(type);
 
         var instancedParameters = new List<object>();

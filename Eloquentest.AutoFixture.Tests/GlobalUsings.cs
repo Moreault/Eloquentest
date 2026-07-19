@@ -1,6 +1,10 @@
+global using AutoFixture;
 global using AutoFixture.Kernel;
 global using Eloquentest.UnitTesting;
 global using Eloquentest.UnitTesting.Extensions;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using ToolBX.AssertBox;
+global using ToolBX.AssertBox.Assertions;
 global using ToolBX.Eloquentest;
+global using ToolBX.Eloquentest.AutoFixture;
 global using ToolBX.Eloquentest.AutoFixture.Customizations;

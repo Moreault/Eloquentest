@@ -18,12 +18,11 @@ public sealed class DummyWrapper : ObjectGenerator
 
     public override object Create(Type type) => _unwrapped.Create(type);
 
-    //TODO _unwrapped.CreateMany<T>() is not implemented
-    public override IEnumerable<T> CreateMany<T>()
+    public override IEnumerable<T> CreateMany<T>() => CreateMany<T>(3);
+
+    public override IEnumerable<T> CreateMany<T>(int count)
     {
-        for (var i = 0; i < 3; i++)
-        {
+        for (var i = 0; i < count; i++)
             yield return _unwrapped.Create<T>();
-        }
     }
 }
