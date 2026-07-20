@@ -186,7 +186,7 @@ public abstract class EnsureBase<TGenerator>
         {
             var original = generator.Create<T>();
             var clone = original.Clone(options);
-            Assert.IsTrue(original.ValueEquals(clone));
+            Assert.IsTrue(original.ValueEquals(clone, new ValueEqualityOptions { Depth = Depth.Recursive }));
         }
         catch (Exception innerException)
         {
@@ -336,7 +336,7 @@ public abstract class EnsureBase<TGenerator>
 
         var json = JsonSerializer.Serialize(instance, options);
         var deserialized = JsonSerializer.Deserialize<T>(json, options);
-        Assert.IsTrue(instance.ValueEquals(deserialized), "Was not serialized and deserialized back into an object of equivalent value. You may need to use a custom JsonSerializer.");
+        Assert.IsTrue(instance.ValueEquals(deserialized, new ValueEqualityOptions { Depth = Depth.Recursive }), "Was not serialized and deserialized back into an object of equivalent value. You may need to use a custom JsonSerializer.");
     }
 
     /// <summary>
